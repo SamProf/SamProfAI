@@ -1,7 +1,7 @@
 #Demo
 
 Demo presenation
-[Demo World](https://samprof.github.io/SamProfAI/index.html#/world?autoStart=true)
+[Demo World](https://samprof.github.io/SamProfAI#/world?autoStart=true)
 
 
 # SamProfAI
