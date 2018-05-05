@@ -447,8 +447,8 @@ export class WorldSimSettings {
   botMemoryLength: number = 64;
   botCount: number = 64;
 
-  width: number = 30;
-  height: number = 20;
+  width: number = 64;
+  height: number = 48;
 
   eatingPercent: number = 0.2;
   poisonPercent: number = 0.1;
