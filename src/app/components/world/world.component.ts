@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {BotWorldCell, WorldModel} from './core/world-model';
+import {BotWorldCell, WorldModel, WorldSimSettings} from './core/world-model';
 import {WorldGenom} from './core/world-genom';
 import {MathHelper} from '../../helpers/math-helper';
 import {b} from '@angular/core/src/render3';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-world',
@@ -11,8 +12,11 @@ import {b} from '@angular/core/src/render3';
 })
 export class WorldComponent implements OnInit {
 
-  constructor() {
+  constructor(private route: ActivatedRoute) {
   }
+
+  settings: WorldSimSettings;
+  newSettings: WorldSimSettings = new WorldSimSettings();
 
   world: WorldModel;
   iGeneration: number = 0;
@@ -20,88 +24,148 @@ export class WorldComponent implements OnInit {
 
   info: string = '';
 
-  showMap: boolean = true;
-  showMapStep: number = 1;
-
   stepCountHistory: number[] = [];
 
-  startSimylation() {
+  curSimAsync: Promise<void> = Promise.resolve();
+  curSimStop: boolean = false;
 
 
-    this.setTimeoutAsync(async () => {
-      var generation = this.createFirstGeneration(64, 64);
+  get eatingPercent(): number {
+    return Math.floor(this.newSettings.eatingPercent * 100);
+  }
 
-      var d1: Date = null;
+  set eatingPercent(v: number) {
+    this.newSettings.eatingPercent = v / 100;
+  }
 
-      for (var iGeneration = 0; true; iGeneration++) {
+  get poisonPercent(): number {
+    return Math.floor(this.newSettings.poisonPercent * 100);
+  }
 
-        this.iGeneration = iGeneration;
-        await this.setTimeoutAsync(async () => {
-          this.world = new WorldModel(generation, 50, 30);
+  set poisonPercent(v: number) {
+    this.newSettings.poisonPercent = v / 100;
+  }
 
-          var stepCount = 10000;
-          for (var iStep = 0; (iStep < stepCount) && (this.world.liveBotCount > 0);) {
-            //this.world.step();
-            await this.setTimeoutAsync(async () => {
-              for (var iStep2 = 0; (iStep < stepCount) && (iStep2 < this.showMapStep) && (this.world.liveBotCount > 0); iStep++, iStep2++) {
-                this.iStep = iStep;
-                this.world.step();
+  get wallPercent(): number {
+    return Math.floor(this.newSettings.wallPercent * 100);
+  }
+
+  set wallPercent(v: number) {
+    this.newSettings.wallPercent = v / 100;
+  }
+
+
+  _speed: number = 1;
+
+  get speed(): number {
+    return this._speed;
+  }
+
+  set speed(v: number) {
+    this._speed = v;
+  }
+
+
+  startSim() {
+
+    this.curSimStop = true;
+    this.curSimAsync.then(() => {
+      this.curSimAsync = this.setTimeoutAsync(async () => {
+        this.curSimStop = false;
+        this.stepCountHistory = [];
+        this.settings = new WorldSimSettings(this.newSettings);
+        this.world = new WorldModel(this.settings);
+        var generation = this.createFirstGeneration();
+
+        var d1: Date = null;
+
+        for (var iGeneration = 0; true; iGeneration++) {
+          if (this.curSimStop) {
+            return;
+          }
+
+          this.iGeneration = iGeneration;
+          this.world.prepare(generation);
+
+          await this.setTimeoutAsync(async () => {
+            if (this.curSimStop) {
+              return;
+            }
+
+            for (var iStep = 0; (iStep < this.settings.stepCount) && (this.world.liveBotCount > 0);) {
+              if (this.curSimStop) {
+                return;
               }
+
+              await this.setTimeoutAsync(async () => {
+                if (this.curSimStop) {
+                  return;
+                }
+                for (var iStep2 = 0; (iStep < this.settings.stepCount) && (iStep2 < this.speed) && (this.world.liveBotCount > 0); iStep++, iStep2++) {
+                  this.iStep = iStep;
+                  this.world.step();
+                }
+              });
+            }
+
+            this.stepCountHistory.push(Math.floor(iStep * 100 / this.settings.stepCount));
+            if (this.stepCountHistory.length > 50) {
+              this.stepCountHistory.shift();
+            }
+
+
+            this.info = '';
+            this.info += ` Generation: ${iGeneration}`;
+
+
+            var bots: BotWorldCell[] = [...this.world.bots];
+            bots.sort((a: BotWorldCell, b: BotWorldCell) => {
+              return b.health - a.health;
             });
-          }
 
-          this.stepCountHistory.push(Math.floor(iStep *100 / stepCount));
-          if (this.stepCountHistory.length > 50)
-          {
-            this.stepCountHistory.shift();
-          }
+            this.info += ` Bots:`;
+            for (var b = 0; b < Math.min(10, bots.length); b++) {
+              var s = bots[b].health.toString();
+              while (s.length < 7) s = ' ' + s;
+              this.info += ' ' + s;
+            }
 
 
-          this.info = '';
-          this.info += ` Generation: ${iGeneration}`;
+            generation = this.createNewGeneration(bots);
 
-          var bots: BotWorldCell[] = [...this.world.bots];
-          bots.sort((a: BotWorldCell, b: BotWorldCell) => {
-            return b.health - a.health;
+            var d2 = new Date();
+            if (d1) {
+              this.info += ' GenTime: ' + (((d2.getTime()) - d1.getTime())).toString();
+            }
+            d1 = d2;
+
+            // console.log(this.info);
           });
-
-          this.info += ` Bests:`;
-          for (var b = 0; b < Math.min(10, bots.length); b++) {
-            var s = bots[b].health.toString();
-            while (s.length < 7) s = ' ' + s;
-            this.info += ' ' + s;
-          }
-
-
-          generation = this.createNewGeneration(bots);
-
-          var d2 = new Date();
-          if (d1) {
-            this.info += ' GenTime: ' + (((d2.getTime()) - d1.getTime())).toString();
-          }
-          d1 = d2;
-
-          // console.log(this.info);
-        });
-      }
+        }
+      });
     });
 
 
   }
 
-  createFirstGeneration(count: number, commandCount: number): WorldGenom[] {
+  createFirstGeneration(): WorldGenom[] {
     var generation: WorldGenom[] = [];
-    for (var i = 0; i < count; i++) {
-      var gemom = new WorldGenom();
-      gemom.init(commandCount);
-      generation.push(gemom);
+    for (var i = 0; i < this.settings.botCount; i++) {
+      var g = new WorldGenom();
+      for (var о = 0; о < this.settings.botMemoryLength; о++) {
+        g.commands.push(MathHelper.getRandomInt(0, 64));
+      }
+      generation.push(g);
     }
     return generation;
   }
 
 
   ngOnInit() {
-    this.startSimylation();
+
+    if (this.route.snapshot.queryParams.autoStart) {
+      this.startSim();
+    }
   }
 
 
@@ -181,19 +245,7 @@ export class WorldComponent implements OnInit {
   }
 
 
-  async runAsync(generation: WorldGenom[]) {
-    this.world = new WorldModel(generation);
-    await this.world.run(1000, 2);
-    console.log('Complete generation');
-  }
 
-  fastModeClick() {
-    this.showMap = false;
-    this.showMapStep = 10000;
-  }
-
-  stepModeClick() {
-    this.showMap = true;
-    this.showMapStep = 1;
-  }
 }
+
+

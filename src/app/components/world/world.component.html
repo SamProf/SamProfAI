@@ -1,8 +1,88 @@
-<pre><input type="checkbox" [(ngModel)]="showMap"> <input type="number" [(ngModel)]="showMapStep" style="width: 50px"> <button
-  (click)="fastModeClick()">Fast</button> <button (click)="stepModeClick()">Step</button> Current generation/step: <span
-  style="min-width: 60px; display: inline-block;">{{iGeneration}}</span> <span
-  style="min-width: 60px; display: inline-block;">{{iStep}}</span>: Info: {{info}}</pre>
-<div *ngIf="showMap && world" style="display: flex; flex-direction: column; flex: 1;">
+<div style="display: flex; flex-direction: column; width: 300px">
+
+  <div class="settings-row">
+    <label>stepCount</label>
+    <p-spinner size="30" [(ngModel)]="newSettings.stepCount" [inputStyle]="{'width': '100%'}"></p-spinner>
+  </div>
+
+  <div class="settings-row">
+    <label>botCount</label>
+    <p-spinner size="30" [(ngModel)]="newSettings.botCount" [inputStyle]="{'width': '100%'}"></p-spinner>
+  </div>
+  <div class="settings-row">
+    <label>botMemoryLength</label>
+    <p-spinner size="30" [(ngModel)]="newSettings.botMemoryLength" [inputStyle]="{'width': '100%'}"></p-spinner>
+  </div>
+
+
+  <div class="settings-row">
+    <label>map width/height</label>
+    <p-spinner size="30" [(ngModel)]="newSettings.width" [inputStyle]="{'width': '100%'}"></p-spinner>
+    <p-spinner size="30" [(ngModel)]="newSettings.height" [inputStyle]="{'width': '100%'}"></p-spinner>
+  </div>
+
+  <div class="settings-row">
+    <label>eating {{eatingPercent}}%</label>
+    <p-slider [(ngModel)]="eatingPercent" [style]="{'width': '100%'}" [min]="0" [max]="100" [step]="1"></p-slider>
+
+  </div>
+
+  <div class="settings-row">
+    <label>poison {{poisonPercent}}%</label>
+    <p-slider [(ngModel)]="poisonPercent" [style]="{'width': '100%'}" [min]="0" [max]="100" [step]="1"></p-slider>
+
+  </div>
+
+  <div class="settings-row">
+    <label>wall {{wallPercent}}%</label>
+    <p-slider [(ngModel)]="wallPercent" [style]="{'width': '100%'}" [min]="0" [max]="100" [step]="1"></p-slider>
+  </div>
+
+
+  <button (click)="startSim()">Start</button>
+
+  <div *ngIf="world" style="display: flex; flex-direction: column;">
+    <h3>Status</h3>
+    <div class="settings-row">
+      <label>
+        <span>Speed</span>
+        <button pButton type="button" label="1" style="" (click)="speed=1"></button>
+        <button pButton type="button" label="F" style="" (click)="speed=settings.stepCount + 1"></button>
+
+      </label>
+      <p-spinner size="30" [(ngModel)]="speed" [inputStyle]="{'width': '100%'}"></p-spinner>
+
+
+    </div>
+    <p-slider [(ngModel)]="speed" [style]="{'width': '100%'}" [min]="1" [max]="settings.stepCount + 1"
+              [step]="1"></p-slider>
+
+    <span>Generation:  {{iGeneration}}</span>
+    <span>Step:  {{iStep}} / {{settings.stepCount}}</span>
+    <span>Live Bots:  {{world.liveBotCount}} / {{settings.botCount}}</span>
+
+
+    <!--<button (click)="fastModeClick()">Fast</button>-->
+    <!--<button (click)="stepModeClick()">Step</button>-->
+
+    <!--<input type="checkbox" [(ngModel)]="showMap">-->
+    <!--<input type="number" [(ngModel)]="showMapStep" style="width: 50px">-->
+
+    <svg style="height: 200px; border: 1px solid gray;">
+
+      <rect *ngFor="let h of stepCountHistory; let index=index;"
+            fill="#fc0"
+            [attr.x]="index *5"
+            [attr.y]="200-h*2"
+            [attr.width]="5"
+            [attr.height]="h*2"/>
+      <text x="0" y="10">
+        Live steps by last generations
+      </text>
+    </svg>
+  </div>
+</div>
+<div *ngIf="world && speed<=settings.stepCount" style="display: flex; flex-direction: column; flex: 1;">
   <div *ngFor="let row of world.map" class="row">
     <div *ngFor="let cell of row" class="cell" [ngClass]="cell.cls">
       <div style="position: absolute;">{{cell.text()}}</div>
@@ -11,15 +91,6 @@
 </div>
 
 
-<svg *ngIf="!showMap " style="height: 400px">
-  <rect *ngFor="let h of stepCountHistory; let index=index;"
-        fill="#fc0"
-        [attr.x]="index * 20"
-        [attr.y]="400-h*4"
-        [attr.width]="20"
-        [attr.height]="h*4"/>
-</svg>
-
 <!--<div *ngIf="!showMap " style="display: flex; flex-direction: row; flex: 1;">-->
-  <!--<div *ngFor="let h of stepCountHistory" [style.height]="''+h.toString()+'%'" style="background: red; flex: 1;"></div>-->
+<!--<div *ngFor="let h of stepCountHistory" [style.height]="''+h.toString()+'%'" style="background: red; flex: 1;"></div>-->
 <!--</div>-->

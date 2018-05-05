@@ -1,175 +1,195 @@
 import {MathHelper} from '../../../helpers/math-helper';
 import {WorldGenom} from './world-genom';
+import {visitProjectedRenderNodes} from '@angular/core/src/view/util';
 
 
 export class WorldModel {
-  map: WorldCellModel[][];
-  bots: BotWorldCell[];
+  map: WorldCellModel[][] = [];
+  commands: WorldCommand[] = [];
+  bots: BotWorldCell[] = [];
 
-  stepIndex: number;
 
-  constructor(private generation: WorldGenom[], public width: number = 100, public height: number = 70) {
-    this.clear();
-    this.createBots();
-    this.liveBotCount = generation.length;
-    this.addGrass(20);
-    this.addPoison(20);
-    this.addWall(20);
-
+  addCommand(count: number, func: (BotWorldCell, number) => boolean) {
+    var index = 0;
+    if (this.commands.length) {
+      index = this.commands[this.commands.length - 1].Index;
+    }
+    index += count;
+    var cmd = new WorldCommand();
+    cmd.Index = index;
+    cmd.Func = func;
+    this.commands.push(cmd);
   }
 
 
-  run(stepCount: number = 1000, stepByRun: number = 10): Promise<void> {
-    this.stepIndex = 0;
-    return new Promise<void>((resolve) => {
-      var runStep = () => {
-        setTimeout(() => {
-          for (var i = 0; i < stepByRun; i++) {
-            this.step();
-            if (this.stepIndex >= stepCount) {
-              resolve();
-              return;
+  constructor(private settings: WorldSimSettings) {
+    this.addCommand(8, (bot, cmd) => {
 
-            }
-          }
+      // step
+      let x, y;
+      [x, y] = this.getXYByAngle(bot, cmd * 45);
+      var cell = this.map[y][x];
 
-          if (this.stepIndex < stepCount) {
-            runStep();
-          }
+      if (cell instanceof PoisonWorldCell) {
+        bot.health = 0;
+        bot.addCommandAddr(1);
+      }
+      else if (cell instanceof WallWorldCell) {
+        bot.addCommandAddr(2);
+      }
+      else if (cell instanceof BotWorldCell) {
+        bot.addCommandAddr(3);
+      }
+      else if (cell instanceof EatingWorldCell) {
+        bot.health += 10;
+        this.map[bot.y][bot.x] = new EmptyWorldCell();
+        this.currentEating--;
+        bot.x = x;
+        bot.y = y;
+        this.map[bot.y][bot.x] = bot;
 
-        }, 0);
-      };
-      runStep();
+        bot.addCommandAddr(4);
+      }
+      else if (cell instanceof EmptyWorldCell) {
+        this.map[bot.y][bot.x] = new EmptyWorldCell();
+        bot.x = x;
+        bot.y = y;
+        this.map[bot.y][bot.x] = bot;
+
+        bot.addCommandAddr(5);
+      }
+      else {
+        throw new Error('cell type');
+      }
+      return true;
+    });
+
+    this.addCommand(8, (bot, cmd) => {
+      // Grab or convert poison
+      let x, y;
+      [x, y] = this.getXYByAngle(bot, cmd * 45);
+      var cell = this.map[y][x];
+      if (cell instanceof PoisonWorldCell) {
+        this.map[y][x] = new EatingWorldCell();
+        this.currentEating++;
+        this.currentPoison--;
+        bot.addCommandAddr(1);
+      }
+      else if (cell instanceof WallWorldCell) {
+        bot.addCommandAddr(2);
+      }
+      else if (cell instanceof BotWorldCell) {
+        bot.addCommandAddr(3);
+      }
+      else if (cell instanceof EatingWorldCell) {
+        bot.health += 10;
+        this.map[y][x] = new EmptyWorldCell();
+        this.currentEating--;
+        bot.addCommandAddr(4);
+      }
+      else if (cell instanceof EmptyWorldCell) {
+        bot.addCommandAddr(5);
+      }
+      else {
+        throw new Error('cell type');
+      }
+      return false;
+    });
+
+
+    this.addCommand(8, (bot, cmd) => {
+      // see
+      let x, y;
+      [x, y] = this.getXYByAngle(bot, cmd * 45);
+      var cell = this.map[y][x];
+      if (cell instanceof PoisonWorldCell) {
+        bot.addCommandAddr(1);
+      }
+      else if (cell instanceof WallWorldCell) {
+        bot.addCommandAddr(2);
+      }
+      else if (cell instanceof BotWorldCell) {
+        bot.addCommandAddr(3);
+      }
+      else if (cell instanceof EatingWorldCell) {
+        bot.addCommandAddr(4);
+      }
+      else if (cell instanceof EmptyWorldCell) {
+        bot.addCommandAddr(5);
+      }
+      else {
+        throw new Error('cell type');
+      }
+      return false;
+    });
+
+    this.addCommand(8, (bot, cmd) => {
+      // rotate
+      bot.angle = (bot.angle + cmd * 45) % 360;
+      bot.addCommandAddr(1);
+      return false;
+    });
+
+    this.addCommand(settings.botMemoryLength, (bot, cmd) => {
+      // jump
+      bot.addCommandAddr(cmd);
+      return false;
     });
   }
 
 
+  stepIndex: number;
   liveBotCount: number;
+  currentEating: number;
+  currentPoison: number;
+  currentWall: number;
+
+  prepare(gens: WorldGenom[]) {
+    this.stepIndex = 0;
+    this.liveBotCount = gens.length;
+    this.clear();
+    this.createBots(gens);
+    this.createWall();
+
+    this.createEating();
+    this.createPoison();
+  }
 
   step() {
-
     this.liveBotCount = 0;
     this.stepIndex++;
-    this.addGrass(2);
-    this.addPoison(1);
+    this.createEating();
+    this.createPoison();
+
     for (var iBot = 0; iBot < this.bots.length; iBot++) {
       var bot = this.bots[iBot];
       var currentCommand = 0;
       if (!bot.isDead) {
         this.liveBotCount++;
 
-
         while (currentCommand++ < 10) {
           var command = bot.getCommand();
-          if (command <= 7) {
-            // debugger;
-            let x, y;
-            [x, y] = this.getXYByAngle(bot, (command - 0) * 45);
-            var cell = this.map[y][x];
-            if (cell instanceof PoisonWorldCell) {
-              bot.health = 0;
-              bot.addCommandAddr(1);
-            }
-            else if (cell instanceof WallWorldCell) {
-              bot.addCommandAddr(2);
-            }
-            else if (cell instanceof BotWorldCell) {
-              bot.addCommandAddr(3);
-            }
-            else if (cell instanceof GrassWorldCell) {
-              bot.health += 10;
-              this.map[bot.y][bot.x] = new EmptyWorldCell();
-              bot.x = x;
-              bot.y = y;
-              this.map[bot.y][bot.x] = bot;
 
-              bot.addCommandAddr(4);
+          var prev = 0;
+          for (var iCmd = 0; iCmd < this.commands.length; iCmd++) {
+            if (command < this.commands[iCmd].Index) {
+              this.commands[iCmd].Func(bot, command - prev);
+              break;
             }
-            else if (cell instanceof EmptyWorldCell) {
-              this.map[bot.y][bot.x] = new EmptyWorldCell();
-              bot.x = x;
-              bot.y = y;
-              this.map[bot.y][bot.x] = bot;
-
-              bot.addCommandAddr(5);
-            }
-            else {
-              throw new Error('cell type');
-            }
-            break;
-          }
-          else if (command <= 15) {
-            // debugger;
-            let x, y;
-            [x, y] = this.getXYByAngle(bot, (command - 8) * 45);
-            var cell = this.map[y][x];
-            if (cell instanceof PoisonWorldCell) {
-              this.map[y][x] = new GrassWorldCell();
-              bot.addCommandAddr(1);
-            }
-            else if (cell instanceof WallWorldCell) {
-              bot.addCommandAddr(2);
-            }
-            else if (cell instanceof BotWorldCell) {
-              bot.addCommandAddr(3);
-            }
-            else if (cell instanceof GrassWorldCell) {
-              bot.health += 10;
-              this.map[y][x] = new EmptyWorldCell();
-              bot.addCommandAddr(4);
-            }
-            else if (cell instanceof EmptyWorldCell) {
-              bot.addCommandAddr(5);
-            }
-            else {
-              throw new Error('cell type');
-            }
-            break;
-          }
-          else if (command <= 23) {
-            // debugger;
-            let x, y;
-            [x, y] = this.getXYByAngle(bot, (command - 16) * 45);
-            var cell = this.map[y][x];
-            if (cell instanceof PoisonWorldCell) {
-              bot.addCommandAddr(1);
-            }
-            else if (cell instanceof WallWorldCell) {
-              bot.addCommandAddr(2);
-            }
-            else if (cell instanceof BotWorldCell) {
-              bot.addCommandAddr(3);
-            }
-            else if (cell instanceof GrassWorldCell) {
-              bot.addCommandAddr(4);
-            }
-            else if (cell instanceof EmptyWorldCell) {
-              bot.addCommandAddr(5);
-            }
-            else {
-              throw new Error('cell type');
-
-            }
-          }
-          else if (command <= 31) {
-            bot.angle = (bot.angle + (command - 24) * 45) % 360;
-            bot.addCommandAddr(1);
-          }
-          else {
-            bot.addCommandAddr(command);
+            prev = this.commands[iCmd].Index;
           }
         }
 
         bot.health--;
         if (bot.isDead) {
-          this.map[bot.y][bot.x] = new GrassWorldCell();
+          this.map[bot.y][bot.x] = new EatingWorldCell();
+          this.currentEating++;
         }
 
         bot.health = Math.min(bot.health, 100);
       }
       else {
         bot.health--;
-
       }
     }
   }
@@ -228,57 +248,30 @@ export class WorldModel {
 
   getXYByDxDy(bot: BotWorldCell, dx: number, dy: number): number[] {
     var x = (bot.x + dx);
-    x %= this.width;
+    x %= this.settings.width;
     if (x < 0) {
-      x = this.width - 1;
+      x = this.settings.width - 1;
     }
 
     var y = (bot.y + dy);
-    y %= this.height;
+    y %= this.settings.height;
     if (y < 0) {
-      y = this.height - 1;
+      y = this.settings.height - 1;
     }
 
     return [x, y];
   }
 
 
-  botGoTo(bot: BotWorldCell, dx: number, dy: number) {
-    var x, y;
-    [x, y] = this.getdXdY(bot, dx, dy);
-
-    var canGo = false;
-    var cell = this.map[y][x];
-
-    if (cell instanceof EmptyWorldCell) {
-      canGo = true;
-    }
-    else if (cell instanceof GrassWorldCell) {
-      bot.health += 10;
-      canGo = true;
-    }
-
-    if (canGo) {
-      this.map[bot.y][bot.x] = new EmptyWorldCell();
-      this.map[y][x] = bot;
-      bot.x = x;
-      bot.y = y;
-    }
-  }
-
-  createBots() {
+  createBots(gens: WorldGenom[]) {
     this.bots = [];
 
 
-    for (var i = 0; i < this.generation.length; i++) {
+    for (var i = 0; i < gens.length; i++) {
       var x, y, flag;
-      var bot = new BotWorldCell(this.generation[i]);
+      var bot = new BotWorldCell(gens[i]);
 
-      [x, y, flag] = this.getEmptyCell(9999);
-
-      if (!flag) {
-        throw new Error('createBots getEmptyCell');
-      }
+      [x, y, flag] = this.getEmptyCell(-1);
 
       bot.x = x;
       bot.y = y;
@@ -290,54 +283,70 @@ export class WorldModel {
 
   private getEmptyCell(tryCount: number = 100) {
 
-    var c = 0;
-    while (c++ < tryCount) {
-      var x = MathHelper.getRandomInt(0, this.width);
-      var y = MathHelper.getRandomInt(0, this.height);
+    while (tryCount != 0) {
+      var x = MathHelper.getRandomInt(0, this.settings.width);
+      var y = MathHelper.getRandomInt(0, this.settings.height);
       if (this.map[y][x] instanceof EmptyWorldCell) {
         return [x, y, true];
       }
+      tryCount--;
     }
     return [-1, -1, false];
   }
 
 
-  addGrass(count: number): void {
-    for (var i = 0; i < count; i++) {
+  createEating(): void {
+    while (this.currentEating / (this.settings.height * this.settings.width) < this.settings.eatingPercent) {
       var x, y, flag;
       [x, y, flag] = this.getEmptyCell();
       if (flag) {
-        this.map[y][x] = new GrassWorldCell();
+        this.map[y][x] = new EatingWorldCell();
+        this.currentEating++;
+      }
+      else {
+        break;
       }
     }
+
   }
 
-  addPoison(count: number): void {
-    for (var i = 0; i < count; i++) {
+  createPoison(): void {
+    while (this.currentPoison / (this.settings.height * this.settings.width) < this.settings.poisonPercent) {
       var x, y, flag;
       [x, y, flag] = this.getEmptyCell();
       if (flag) {
         this.map[y][x] = new PoisonWorldCell();
+        this.currentPoison++;
+      }
+      else {
+        break;
       }
     }
   }
 
-  addWall(count: number): void {
-    for (var i = 0; i < count; i++) {
+  createWall(): void {
+    while (this.currentWall / (this.settings.height * this.settings.width) < this.settings.wallPercent) {
       var x, y, flag;
       [x, y, flag] = this.getEmptyCell();
       if (flag) {
         this.map[y][x] = new WallWorldCell();
+        this.currentWall++;
+      }
+      else {
+        break;
       }
     }
   }
 
 
   clear() {
+    this.currentEating = 0;
+    this.currentPoison = 0;
+    this.currentWall = 0;
     this.map = [];
-    for (var y = 0; y < this.height; y++) {
+    for (var y = 0; y < this.settings.height; y++) {
       var row: WorldCellModel[] = [];
-      for (var x = 0; x < this.width; x++) {
+      for (var x = 0; x < this.settings.width; x++) {
         row.push(new EmptyWorldCell());
       }
       this.map.push(row);
@@ -362,7 +371,7 @@ export class EmptyWorldCell extends WorldCellModel {
 }
 
 
-export class GrassWorldCell extends WorldCellModel {
+export class EatingWorldCell extends WorldCellModel {
   cls: string = 'grassCell';
 
   text(): string {
@@ -422,3 +431,28 @@ export class BotWorldCell extends WorldCellModel {
   }
 }
 
+
+export class WorldCommand {
+  Index: number;
+  Func: (BotWorldCell, number) => boolean;
+}
+
+
+export class WorldSimSettings {
+
+  constructor(config: Partial<WorldSimSettings> = {}) {
+    Object.assign(this, config);
+  }
+
+  botMemoryLength: number = 64;
+  botCount: number = 64;
+
+  width: number = 64;
+  height: number = 64;
+
+  eatingPercent: number = 0.2;
+  poisonPercent: number = 0.1;
+  wallPercent: number = 0.1;
+
+  stepCount: number = 10000;
+}
