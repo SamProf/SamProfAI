@@ -5,6 +5,7 @@ import {RouterModule, Routes} from '@angular/router';
 
 import {PageNoFoundComponent} from './components/page-no-found/page-no-found.component';
 import {WorldComponent} from './components/world/world.component';
+import {FormsModule} from '@angular/forms';
 
 
 const appRoutes: Routes = [
@@ -26,6 +27,7 @@ const appRoutes: Routes = [
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     RouterModule.forRoot(
       appRoutes,
       {

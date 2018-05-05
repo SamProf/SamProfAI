@@ -1,3 +1,25 @@
-<p>
-  world works!
-</p>
+<pre><input type="checkbox" [(ngModel)]="showMap"> <input type="number" [(ngModel)]="showMapStep" style="width: 50px"> <button
+  (click)="fastModeClick()">Fast</button> <button (click)="stepModeClick()">Step</button> Current generation/step: <span
+  style="min-width: 60px; display: inline-block;">{{iGeneration}}</span> <span
+  style="min-width: 60px; display: inline-block;">{{iStep}}</span>: Info: {{info}}</pre>
+<div *ngIf="showMap && world" style="display: flex; flex-direction: column; flex: 1;">
+  <div *ngFor="let row of world.map" class="row">
+    <div *ngFor="let cell of row" class="cell" [ngClass]="cell.cls">
+      <div style="position: absolute;">{{cell.text()}}</div>
+    </div>
+  </div>
+</div>
+
+
+<svg *ngIf="!showMap " style="height: 400px">
+  <rect *ngFor="let h of stepCountHistory; let index=index;"
+        fill="#fc0"
+        [attr.x]="index * 20"
+        [attr.y]="400-h*4"
+        [attr.width]="20"
+        [attr.height]="h*4"/>
+</svg>
+
+<!--<div *ngIf="!showMap " style="display: flex; flex-direction: row; flex: 1;">-->
+  <!--<div *ngFor="let h of stepCountHistory" [style.height]="''+h.toString()+'%'" style="background: red; flex: 1;"></div>-->
+<!--</div>-->

@@ -1,0 +1,48 @@
+:host {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex: 1
+}
+
+.cell {
+  flex: 1;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  //border: 0.1px solid lightgray;
+}
+
+.emptyCell
+{
+
+}
+
+.grassCell
+{
+  background: greenyellow;
+}
+
+.botCell
+{
+  background: blue;
+  color: white;
+}
+
+.poisonCell
+{
+  background: red;
+}
+
+.wallCell
+{
+  background: black;
+}
+
+
+
