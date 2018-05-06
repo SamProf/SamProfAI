@@ -40,6 +40,7 @@
 
 
   <button (click)="startSim()">Start</button>
+  <button (click)="sim.stopSim()">Stop</button>
 
   <div *ngIf="sim.world" style="display: flex; flex-direction: column;">
     <h3>Status</h3>

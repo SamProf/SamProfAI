@@ -21,6 +21,10 @@ export class WorldSym {
   currentSym: WorkerState = new WorkerState();
 
   info: string = '';
+  stopSim() {
+    this.currentSym.terminate();
+  }
+
 
   startSim() {
 
