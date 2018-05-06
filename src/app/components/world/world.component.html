@@ -46,13 +46,15 @@
     <div class="settings-row">
       <label>
         <span>Speed</span>
-        <button pButton type="button" label="1" style="" (click)="speed=1"></button>
-        <button pButton type="button" label="F" style="" (click)="speed=settings.stepCount + 1"></button>
 
       </label>
       <p-spinner size="30" [(ngModel)]="speed" [inputStyle]="{'width': '100%'}"></p-spinner>
 
 
+    </div>
+    <div style="display: flex; flex-direction: row;">
+      <button pButton type="button" label="Slow by Step" style="" (click)="speed=1" style="flex: 1;"></button>
+      <button pButton type="button" label="Fast by Generation" style="" (click)="speed=settings.stepCount + 1" style="flex: 1"></button>
     </div>
     <p-slider [(ngModel)]="speed" [style]="{'width': '100%'}" [min]="1" [max]="settings.stepCount + 1"
               [step]="1"></p-slider>
