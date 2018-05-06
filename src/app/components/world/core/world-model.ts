@@ -1,6 +1,10 @@
 import {MathHelper} from '../../../helpers/math-helper';
 import {WorldGenom} from './world-genom';
-import {visitProjectedRenderNodes} from '@angular/core/src/view/util';
+import {WorldCellModel} from './world-cell-model';
+import {WorldCellType} from './world-cell-type';
+import {WorldBotState} from './world-bot-state';
+import {WorldCommand} from './world-command';
+import {WorldSimSettings} from './world-sim-settings';
 
 
 export class WorldModel {
@@ -419,93 +423,5 @@ export class WorldModel {
 }
 
 
-export class WorldCellModel {
-  public get text(): string {
-    if (this.type == WorldCellType.bot) {
-      return this.bot.health.toString();
-    }
-  }
-
-  public type: WorldCellType;
-
-  public bot: WorldBotState;
-
-  public get cls(): string {
-    return WorldCellType[this.type];
-  }
-
-  constructor() {
-    this.type = WorldCellType.empty;
-  }
-
-}
 
 
-export enum WorldCellType {
-  empty,
-  eating,
-  bot,
-  wall,
-  poison
-}
-
-export class WorldBotState {
-
-  health: number = 0;
-  angle: number = 0;
-  x: number;
-  y: number;
-  commandIndex: number = 0;
-
-  get isDead(): boolean {
-    return this.health <= 0;
-  }
-
-
-  getCommand(): number {
-    return this.genom.commands[this.commandIndex];
-  }
-
-  addCommandAddr(addr: number) {
-    this.commandIndex = (this.commandIndex + addr) % this.genom.commands.length;
-  }
-
-
-  constructor(public genom: WorldGenom) {
-    this.health = 100;
-  }
-}
-
-
-export class WorldCommand {
-  firstIndex: number;
-  index: number;
-  func: (BotWorldCell, number) => boolean;
-}
-
-
-export class WorldSimSettings {
-
-  constructor(config: Partial<WorldSimSettings> = {}) {
-    Object.assign(this, config);
-  }
-
-  botMemoryLength: number = 64;
-  botCount: number = 64;
-
-  width: number = 64;
-  height: number = 48;
-
-  eatingPercent: number = 0.05;
-  poisonPercent: number = 0.05;
-  wallPercent: number = 0.1;
-
-  stepCount: number = 10000;
-
-  longSee: boolean = true;
-
-  mutantPercent: number = 0.5;
-  mutantCellPercent: number = 0.1;
-  newGenerationTopPercent: number = 0.2;
-
-}

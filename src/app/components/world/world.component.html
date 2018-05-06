@@ -41,57 +41,50 @@
 
   <button (click)="startSim()">Start</button>
 
-  <div *ngIf="world" style="display: flex; flex-direction: column;">
+  <div *ngIf="sim.world" style="display: flex; flex-direction: column;">
     <h3>Status</h3>
-    <div class="settings-row">
-      <label>
-        <span>Speed</span>
+    <!--<div class="settings-row">-->
+    <!--<label>-->
+    <!--<span>Speed</span>-->
 
-      </label>
-      <p-spinner size="30" [(ngModel)]="speed" [inputStyle]="{'width': '100%'}"></p-spinner>
+    <!--</label>-->
+    <!--<p-spinner size="30" [(ngModel)]="speed" [inputStyle]="{'width': '100%'}"></p-spinner>-->
 
 
-    </div>
+    <!--</div>-->
     <div style="display: flex; flex-direction: row;">
-      <button pButton type="button" label="Slow by Step" style="" (click)="speed=1" style="flex: 1;"></button>
-      <button pButton type="button" label="Fast by Generation" style="" (click)="speed=settings.stepCount + 1" style="flex: 1"></button>
+      <button pButton type="button" label="Slow by Step" style="" (click)="settings.showMap=true"
+              style="flex: 1;"></button>
+      <button pButton type="button" label="Fast by Generation" style="" (click)="settings.showMap=false"
+              style="flex: 1"></button>
     </div>
-    <p-slider [(ngModel)]="speed" [style]="{'width': '100%'}" [min]="1" [max]="settings.stepCount + 1"
-              [step]="1"></p-slider>
+    <!--<p-slider [(ngModel)]="speed" [style]="{'width': '100%'}" [min]="1" [max]="settings.stepCount + 1"-->
+    <!--[step]="1"></p-slider>-->
 
-    <span>Generation:  {{iGeneration}}</span>
-    <span>Step:  {{iStep}} / {{settings.stepCount}}</span>
-    <span>Live Bots:  {{world.liveBotsCount}} / {{settings.botCount}}</span>
-
-
-    <!--<button (click)="fastModeClick()">Fast</button>-->
-    <!--<button (click)="stepModeClick()">Step</button>-->
+    <span>Generation:  {{sim.iGeneration}}</span>
+    <span>Step:  {{sim.iStep}} / {{settings.stepCount}}</span>
+    <span>Live Bots:  {{sim.world.liveBotsCount}} / {{settings.botCount}}</span>
 
     <!--<input type="checkbox" [(ngModel)]="showMap">-->
     <!--<input type="number" [(ngModel)]="showMapStep" style="width: 50px">-->
 
-    <svg style="height: 200px; border: 1px solid gray;" *ngIf="stepCountHistory.length">
+    <svg style="height: 200px; border: 1px solid gray;" *ngIf="sim.lastStepCounts.length">
 
-      <rect *ngFor="let h of stepCountHistory; let index=index;"
-            fill="#fc0"
-            [attr.x]="index *5"
-            [attr.y]="200-h*2"
+      <rect *ngFor="let h of sim.lastStepCounts; let index=index;"
+            fill="black"
+            [attr.x]="''+(index *100  / sim.lastStepCounts.length)+'%'"
+            [attr.y]="0"
             [attr.width]="4"
-            [attr.height]="h*2"/>
-      <text x="0" y="10">
-        Live steps by last generations
-      </text>
-
-      <text x="0" y="30">
-        Mid: {{stepCountHistoryMid}}
-      </text>
+            [attr.height]="''+(h * 100/ settings.stepCount)+'%'"/>
+      <!--<text x="0" y="30">-->
+      <!--Mid: {{stepCountHistoryMid}}-->
+      <!--</text>-->
     </svg>
-
-    <pre style="white-space: pre-wrap;">{{info}}</pre>
+    <pre style="white-space: pre-wrap;">{{sim.info}}</pre>
   </div>
 </div>
-<div *ngIf="world && speed<=settings.stepCount" style="display: flex; flex-direction: column; flex: 1;">
-  <div *ngFor="let row of world.map" class="row">
+<div *ngIf="settings.showMap && sim.world" style="display: flex; flex-direction: column; flex: 1;">
+  <div *ngFor="let row of sim.world.map" class="row">
     <div *ngFor="let cell of row" class="cell" [ngClass]="cell.cls">
       <div style="position: absolute;">{{cell.text}}</div>
     </div>

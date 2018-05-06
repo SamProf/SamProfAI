@@ -1,4 +1,4 @@
-call ng build --prod --aot --output-hashing=false
+call ng build --prod --aot
 
 
 
