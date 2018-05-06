@@ -21,6 +21,7 @@ export class WorldSym {
   currentSym: WorkerState = new WorkerState();
 
   info: string = '';
+
   stopSim() {
     this.currentSym.terminate();
   }
@@ -48,7 +49,7 @@ export class WorldSym {
             this.world.prepare(generation);
 
 
-            for (var iStep = 0; (iStep < this.settings.stepCount) && (this.world.liveBotsCount > 0); iStep++) {
+            for (var iStep = 0; (iStep < this.settings.stepCount) && (this.world.liveBotsCount > (this.settings.simToLast ? 0 : this.settings.newGenerationTopPercent * generation.length)); iStep++) {
               if (state.terminated) {
                 return;
               }

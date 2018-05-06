@@ -38,6 +38,11 @@
     <p-spinner size="30" [(ngModel)]="wallPercent" [inputStyle]="{'width': '100%'}"></p-spinner>
   </div>
 
+  <div class="settings-row">
+    <label>simToLast</label>
+    <input type="checkbox" [(ngModel)]="settings.simToLast">
+  </div>
+
 
   <button (click)="startSim()">Start</button>
   <button (click)="sim.stopSim()">Stop</button>

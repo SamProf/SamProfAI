@@ -23,6 +23,7 @@ export class WorldSimSettings implements IWorldSimSettings {
   newGenerationTopPercent: number = 0.2;
   showMap: boolean = true;
   speed: number = 1;
+  simToLast: boolean = true;
 
 }
 
@@ -45,6 +46,8 @@ export interface IWorldSimSettings {
   mutantPercent: number;
   mutantCellPercent: number;
   newGenerationTopPercent: number;
+
+  simToLast: boolean;
 
   showMap: boolean;
   speed: number;
