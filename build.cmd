@@ -1,4 +1,4 @@
-call ng build --prod --aot
+call ng build --prod --aot --base-href /SamProfAI/
 
 
 
