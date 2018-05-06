@@ -6,21 +6,51 @@ import {visitProjectedRenderNodes} from '@angular/core/src/view/util';
 export class WorldModel {
   map: WorldCellModel[][] = [];
   commands: WorldCommand[] = [];
-  bots: BotWorldCell[] = [];
+  bots: WorldBotState[] = [];
 
 
   addCommand(count: number, func: (BotWorldCell, number) => boolean) {
-    var index = 0;
-    if (this.commands.length) {
-      index = this.commands[this.commands.length - 1].Index;
-    }
-    index += count;
+    // var firstIndex = 0;
+    // if (this.commands.length) {
+    //   firstIndex = this.commands[this.commands.length - 1].index;
+    // }
+    // var index = firstIndex + count;
+    // var cmd = new WorldCommand();
+    // cmd.firstIndex = firstIndex;
+    // cmd.index = index;
+    // cmd.func = func;
+    // this.commands.push(cmd);
+
+    var firstIndex = this.commands.length;
+    var index = firstIndex + count;
     var cmd = new WorldCommand();
-    cmd.Index = index;
-    cmd.Func = func;
-    this.commands.push(cmd);
+    cmd.firstIndex = firstIndex;
+    cmd.index = index;
+    cmd.func = func;
+    for (var i = 0; i < count; i++) {
+      this.commands.push(cmd);
+    }
   }
 
+
+  private dataDxDyLongByAngle: number[][] = [
+    [0, -2],
+    [1, -2],
+    [2, -2],
+    [2, -1],
+    [2, 0],
+    [2, 1],
+    [2, 2],
+    [1, 2],
+    [0, 2],
+    [-1, 2],
+    [-2, 2],
+    [-2, 1],
+    [-2, 0],
+    [-2, -1],
+    [-2, -2],
+    [-1, -2],
+  ];
 
   constructor(private settings: WorldSimSettings) {
     this.addCommand(8, (bot, cmd) => {
@@ -30,36 +60,42 @@ export class WorldModel {
       [x, y] = this.getXYByAngle(bot, cmd * 45);
       var cell = this.map[y][x];
 
-      if (cell instanceof PoisonWorldCell) {
-        bot.health = 0;
-        bot.addCommandAddr(1);
-      }
-      else if (cell instanceof WallWorldCell) {
-        bot.addCommandAddr(2);
-      }
-      else if (cell instanceof BotWorldCell) {
-        bot.addCommandAddr(3);
-      }
-      else if (cell instanceof EatingWorldCell) {
-        bot.health += 10;
-        this.map[bot.y][bot.x] = new EmptyWorldCell();
-        this.currentEating--;
-        bot.x = x;
-        bot.y = y;
-        this.map[bot.y][bot.x] = bot;
+      switch (cell.type) {
+        case WorldCellType.poison: {
+          bot.health = 0;
+          bot.addCommandAddr(1);
+          break;
+        }
+        case WorldCellType.wall: {
+          bot.addCommandAddr(2);
+          break;
+        }
+        case WorldCellType.bot: {
+          bot.addCommandAddr(3);
+          break;
+        }
+        case WorldCellType.eating: {
+          bot.health += 10;
+          this.map[bot.y][bot.x].type = WorldCellType.empty;
+          this.currentEating--;
+          bot.x = x;
+          bot.y = y;
+          cell.type = WorldCellType.bot;
+          cell.bot = bot;
 
-        bot.addCommandAddr(4);
-      }
-      else if (cell instanceof EmptyWorldCell) {
-        this.map[bot.y][bot.x] = new EmptyWorldCell();
-        bot.x = x;
-        bot.y = y;
-        this.map[bot.y][bot.x] = bot;
+          bot.addCommandAddr(4);
+          break;
+        }
+        case WorldCellType.empty: {
+          this.map[bot.y][bot.x].type = WorldCellType.empty;
+          bot.x = x;
+          bot.y = y;
+          cell.type = WorldCellType.bot;
+          cell.bot = bot;
 
-        bot.addCommandAddr(5);
-      }
-      else {
-        throw new Error('cell type');
+          bot.addCommandAddr(5);
+          break;
+        }
       }
       return true;
     });
@@ -69,29 +105,34 @@ export class WorldModel {
       let x, y;
       [x, y] = this.getXYByAngle(bot, cmd * 45);
       var cell = this.map[y][x];
-      if (cell instanceof PoisonWorldCell) {
-        this.map[y][x] = new EatingWorldCell();
-        this.currentEating++;
-        this.currentPoison--;
-        bot.addCommandAddr(1);
-      }
-      else if (cell instanceof WallWorldCell) {
-        bot.addCommandAddr(2);
-      }
-      else if (cell instanceof BotWorldCell) {
-        bot.addCommandAddr(3);
-      }
-      else if (cell instanceof EatingWorldCell) {
-        bot.health += 10;
-        this.map[y][x] = new EmptyWorldCell();
-        this.currentEating--;
-        bot.addCommandAddr(4);
-      }
-      else if (cell instanceof EmptyWorldCell) {
-        bot.addCommandAddr(5);
-      }
-      else {
-        throw new Error('cell type');
+
+      switch (cell.type) {
+        case WorldCellType.poison: {
+          this.map[y][x].type = WorldCellType.eating;
+          this.currentEating++;
+          this.currentPoison--;
+          bot.addCommandAddr(1);
+          break;
+        }
+        case WorldCellType.wall: {
+          bot.addCommandAddr(2);
+          break;
+        }
+        case WorldCellType.bot: {
+          bot.addCommandAddr(3);
+          break;
+        }
+        case WorldCellType.eating: {
+          bot.health += 10;
+          cell.type = WorldCellType.empty;
+          this.currentEating--;
+          bot.addCommandAddr(4);
+          break;
+        }
+        case WorldCellType.empty: {
+          bot.addCommandAddr(5);
+          break;
+        }
       }
       return false;
     });
@@ -102,26 +143,73 @@ export class WorldModel {
       let x, y;
       [x, y] = this.getXYByAngle(bot, cmd * 45);
       var cell = this.map[y][x];
-      if (cell instanceof PoisonWorldCell) {
-        bot.addCommandAddr(1);
+
+
+      switch (cell.type) {
+        case WorldCellType.poison: {
+          bot.addCommandAddr(1);
+          break;
+        }
+        case WorldCellType.wall: {
+          bot.addCommandAddr(2);
+          break;
+        }
+        case WorldCellType.bot: {
+          bot.addCommandAddr(3);
+          break;
+        }
+        case WorldCellType.eating: {
+          bot.addCommandAddr(4);
+          break;
+        }
+        case WorldCellType.empty: {
+          bot.addCommandAddr(5);
+          break;
+        }
       }
-      else if (cell instanceof WallWorldCell) {
-        bot.addCommandAddr(2);
-      }
-      else if (cell instanceof BotWorldCell) {
-        bot.addCommandAddr(3);
-      }
-      else if (cell instanceof EatingWorldCell) {
-        bot.addCommandAddr(4);
-      }
-      else if (cell instanceof EmptyWorldCell) {
-        bot.addCommandAddr(5);
-      }
-      else {
-        throw new Error('cell type');
-      }
+
+
       return false;
     });
+
+    if (this.settings.longSee) {
+      this.addCommand(16, (bot, cmd) => {
+        // see
+
+
+        let dx, dy;
+        let x, y;
+
+        [dx, dy] = this.dataDxDyLongByAngle[(((cmd * 45) + bot.angle) % 360) / 45];
+        [x, y] = this.getXYByDxDy(bot, dx, dy);
+        var cell = this.map[y][x];
+
+        switch (cell.type) {
+          case WorldCellType.poison: {
+            bot.addCommandAddr(1);
+            break;
+          }
+          case WorldCellType.wall: {
+            bot.addCommandAddr(2);
+            break;
+          }
+          case WorldCellType.bot: {
+            bot.addCommandAddr(3);
+            break;
+          }
+          case WorldCellType.eating: {
+            bot.addCommandAddr(4);
+            break;
+          }
+          case WorldCellType.empty: {
+            bot.addCommandAddr(5);
+            break;
+          }
+        }
+
+        return false;
+      });
+    }
 
     this.addCommand(8, (bot, cmd) => {
       // rotate
@@ -139,14 +227,13 @@ export class WorldModel {
 
 
   stepIndex: number;
-  liveBotCount: number;
+  liveBotsCount: number;
   currentEating: number;
   currentPoison: number;
   currentWall: number;
 
   prepare(gens: WorldGenom[]) {
     this.stepIndex = 0;
-    this.liveBotCount = gens.length;
     this.clear();
     this.createBots(gens);
     this.createWall();
@@ -156,34 +243,44 @@ export class WorldModel {
   }
 
   step() {
-    this.liveBotCount = 0;
+    this.liveBotsCount = 0;
+    var liveBots: WorldBotState[] = [];
     this.stepIndex++;
     this.createEating();
     this.createPoison();
 
     for (var iBot = 0; iBot < this.bots.length; iBot++) {
       var bot = this.bots[iBot];
-      var currentCommand = 0;
-      if (!bot.isDead) {
-        this.liveBotCount++;
 
+      if (!bot.isDead) {
+        var currentCommand = 0;
         while (currentCommand++ < 10) {
           var command = bot.getCommand();
 
-          var prev = 0;
-          for (var iCmd = 0; iCmd < this.commands.length; iCmd++) {
-            if (command < this.commands[iCmd].Index) {
-              this.commands[iCmd].Func(bot, command - prev);
-              break;
-            }
-            prev = this.commands[iCmd].Index;
+
+          var cmd = this.commands[command];
+          if (cmd.func(bot, command - cmd.firstIndex)) {
+            break;
           }
+
+
+          // for (var iCmd = 0; iCmd < this.commands.length; iCmd++) {
+          //   var cmd = this.commands[iCmd];
+          //   if (command < cmd.index) {
+          //     cmd.func(bot, command - cmd.firstIndex);
+          //     break;
+          //   }
+          // }
         }
 
         bot.health--;
         if (bot.isDead) {
-          this.map[bot.y][bot.x] = new EatingWorldCell();
+          this.map[bot.y][bot.x].type = WorldCellType.eating;
           this.currentEating++;
+
+        }
+        else {
+          this.liveBotsCount++;
         }
 
         bot.health = Math.min(bot.health, 100);
@@ -192,73 +289,39 @@ export class WorldModel {
         bot.health--;
       }
     }
+
   }
 
 
-  getXYByAngle(bot: BotWorldCell, angle: number): number[] {
-    angle = (bot.angle + angle) % 360;
-    switch (angle) {
-      case 0: {
-        var dx = 0;
-        var dy = -1;
-        break;
-      }
-      case 45: {
-        var dy = -1;
-        var dx = 1;
-        break;
-      }
-      case 90: {
-        var dx = 1;
-        var dy = 0;
-        break;
-      }
-      case 135: {
-        var dx = 1;
-        var dy = 1;
-        break;
-      }
-      case 180: {
-        var dx = 0;
-        var dy = 1;
-        break;
-      }
-      case 225: {
-        var dx = -1;
-        var dy = 1;
-        break;
-      }
-      case 270: {
-        var dx = -1;
-        var dy = 0;
-        break;
-      }
-      case 315: {
-        var dx = -1;
-        var dy = -1;
-        break;
-      }
-      default:
-        throw new Error('getXYByAngle ' + angle);
-    }
+  dataDxDyByAngle: number[][] = [
+    [0, -1],
+    [1, -1],
+    [1, 0],
+    [1, 1],
+    [0, 1],
+    [-1, 1],
+    [-1, 0],
+    [-1, -1],
+  ];
 
+  getXYByAngle(bot: WorldBotState, angle: number): number[] {
+    angle = ((bot.angle + angle) % 360);
+    var dx, dy;
+    [dx, dy] = this.dataDxDyByAngle[angle / 45];
     return this.getXYByDxDy(bot, dx, dy);
   }
 
 
-  getXYByDxDy(bot: BotWorldCell, dx: number, dy: number): number[] {
-    var x = (bot.x + dx);
-    x %= this.settings.width;
+  getXYByDxDy(bot: WorldBotState, dx: number, dy: number): number[] {
+    var x = (bot.x + dx) % this.settings.width;
     if (x < 0) {
-      x = this.settings.width - 1;
+      x = x + this.settings.width;
     }
 
-    var y = (bot.y + dy);
-    y %= this.settings.height;
+    var y = (bot.y + dy) % this.settings.height;
     if (y < 0) {
-      y = this.settings.height - 1;
+      y = y + this.settings.height;
     }
-
     return [x, y];
   }
 
@@ -266,19 +329,20 @@ export class WorldModel {
   createBots(gens: WorldGenom[]) {
     this.bots = [];
 
-
     for (var i = 0; i < gens.length; i++) {
       var x, y, flag;
-      var bot = new BotWorldCell(gens[i]);
+      var bot = new WorldBotState(gens[i]);
 
       [x, y, flag] = this.getEmptyCell(-1);
 
       bot.x = x;
       bot.y = y;
       bot.angle = (MathHelper.getRandomInt(0, 8) * 45) % 360;
-      this.map[y][x] = bot;
+      this.map[y][x].type = WorldCellType.bot;
+      this.map[y][x].bot = bot;
       this.bots.push(bot);
     }
+    this.liveBotsCount = this.bots.length;
   }
 
   private getEmptyCell(tryCount: number = 100) {
@@ -286,7 +350,7 @@ export class WorldModel {
     while (tryCount != 0) {
       var x = MathHelper.getRandomInt(0, this.settings.width);
       var y = MathHelper.getRandomInt(0, this.settings.height);
-      if (this.map[y][x] instanceof EmptyWorldCell) {
+      if (this.map[y][x].type == WorldCellType.empty) {
         return [x, y, true];
       }
       tryCount--;
@@ -300,7 +364,7 @@ export class WorldModel {
       var x, y, flag;
       [x, y, flag] = this.getEmptyCell();
       if (flag) {
-        this.map[y][x] = new EatingWorldCell();
+        this.map[y][x].type = WorldCellType.eating;
         this.currentEating++;
       }
       else {
@@ -315,7 +379,7 @@ export class WorldModel {
       var x, y, flag;
       [x, y, flag] = this.getEmptyCell();
       if (flag) {
-        this.map[y][x] = new PoisonWorldCell();
+        this.map[y][x].type = WorldCellType.poison;
         this.currentPoison++;
       }
       else {
@@ -329,7 +393,7 @@ export class WorldModel {
       var x, y, flag;
       [x, y, flag] = this.getEmptyCell();
       if (flag) {
-        this.map[y][x] = new WallWorldCell();
+        this.map[y][x].type = WorldCellType.wall;
         this.currentWall++;
       }
       else {
@@ -347,7 +411,7 @@ export class WorldModel {
     for (var y = 0; y < this.settings.height; y++) {
       var row: WorldCellModel[] = [];
       for (var x = 0; x < this.settings.width; x++) {
-        row.push(new EmptyWorldCell());
+        row.push(new WorldCellModel());
       }
       this.map.push(row);
     }
@@ -355,66 +419,48 @@ export class WorldModel {
 }
 
 
-export abstract class WorldCellModel {
-  public abstract cls: string;
+export class WorldCellModel {
+  public get text(): string {
+    if (this.type == WorldCellType.bot) {
+      return this.bot.health.toString();
+    }
+  }
 
-  public abstract text(): string;
+  public type: WorldCellType;
+
+  public bot: WorldBotState;
+
+  public get cls(): string {
+    return WorldCellType[this.type];
+  }
+
+  constructor() {
+    this.type = WorldCellType.empty;
+  }
+
 }
 
 
-export class EmptyWorldCell extends WorldCellModel {
-  cls: string = 'emptyCell';
-
-  text(): string {
-    return '';
-  }
+export enum WorldCellType {
+  empty,
+  eating,
+  bot,
+  wall,
+  poison
 }
 
-
-export class EatingWorldCell extends WorldCellModel {
-  cls: string = 'grassCell';
-
-  text(): string {
-    return '';
-  }
-}
-
-export class PoisonWorldCell extends WorldCellModel {
-  cls: string = 'poisonCell';
-
-  text(): string {
-    return '';
-  }
-}
-
-
-export class WallWorldCell extends WorldCellModel {
-  cls: string = 'wallCell';
-
-  text(): string {
-    return '';
-  }
-}
-
-export class BotWorldCell extends WorldCellModel {
-  text(): string {
-    return this.health.toString();
-    // return "";
-  }
-
-  cls: string = 'botCell';
+export class WorldBotState {
 
   health: number = 0;
   angle: number = 0;
   x: number;
   y: number;
+  commandIndex: number = 0;
 
   get isDead(): boolean {
     return this.health <= 0;
   }
 
-
-  commandIndex: number = 0;
 
   getCommand(): number {
     return this.genom.commands[this.commandIndex];
@@ -426,15 +472,15 @@ export class BotWorldCell extends WorldCellModel {
 
 
   constructor(public genom: WorldGenom) {
-    super();
     this.health = 100;
   }
 }
 
 
 export class WorldCommand {
-  Index: number;
-  Func: (BotWorldCell, number) => boolean;
+  firstIndex: number;
+  index: number;
+  func: (BotWorldCell, number) => boolean;
 }
 
 
@@ -450,9 +496,16 @@ export class WorldSimSettings {
   width: number = 64;
   height: number = 48;
 
-  eatingPercent: number = 0.2;
-  poisonPercent: number = 0.1;
+  eatingPercent: number = 0.05;
+  poisonPercent: number = 0.05;
   wallPercent: number = 0.1;
 
   stepCount: number = 10000;
+
+  longSee: boolean = true;
+
+  mutantPercent: number = 0.5;
+  mutantCellPercent: number = 0.1;
+  newGenerationTopPercent: number = 0.2;
+
 }

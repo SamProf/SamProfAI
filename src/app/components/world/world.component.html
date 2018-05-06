@@ -2,40 +2,40 @@
 
   <div class="settings-row">
     <label>stepCount</label>
-    <p-spinner size="30" [(ngModel)]="newSettings.stepCount" [inputStyle]="{'width': '100%'}"></p-spinner>
+    <p-spinner size="30" [(ngModel)]="settings.stepCount" [inputStyle]="{'width': '100%'}"></p-spinner>
   </div>
 
   <div class="settings-row">
     <label>botCount</label>
-    <p-spinner size="30" [(ngModel)]="newSettings.botCount" [inputStyle]="{'width': '100%'}"></p-spinner>
+    <p-spinner size="30" [(ngModel)]="settings.botCount" [inputStyle]="{'width': '100%'}"></p-spinner>
   </div>
   <div class="settings-row">
     <label>botMemoryLength</label>
-    <p-spinner size="30" [(ngModel)]="newSettings.botMemoryLength" [inputStyle]="{'width': '100%'}"></p-spinner>
+    <p-spinner size="30" [(ngModel)]="settings.botMemoryLength" [inputStyle]="{'width': '100%'}"></p-spinner>
   </div>
 
 
   <div class="settings-row">
     <label>map width/height</label>
-    <p-spinner size="30" [(ngModel)]="newSettings.width" [inputStyle]="{'width': '100%'}"></p-spinner>
-    <p-spinner size="30" [(ngModel)]="newSettings.height" [inputStyle]="{'width': '100%'}"></p-spinner>
+    <p-spinner size="30" [(ngModel)]="settings.width" [inputStyle]="{'width': '100%'}"></p-spinner>
+    <p-spinner size="30" [(ngModel)]="settings.height" [inputStyle]="{'width': '100%'}"></p-spinner>
   </div>
 
   <div class="settings-row">
     <label>eating {{eatingPercent}}%</label>
-    <p-slider [(ngModel)]="eatingPercent" [style]="{'width': '100%'}" [min]="0" [max]="100" [step]="1"></p-slider>
+    <p-spinner size="30" [(ngModel)]="eatingPercent" [inputStyle]="{'width': '100%'}"></p-spinner>
 
   </div>
 
   <div class="settings-row">
     <label>poison {{poisonPercent}}%</label>
-    <p-slider [(ngModel)]="poisonPercent" [style]="{'width': '100%'}" [min]="0" [max]="100" [step]="1"></p-slider>
+    <p-spinner size="30" [(ngModel)]="poisonPercent" [inputStyle]="{'width': '100%'}"></p-spinner>
 
   </div>
 
   <div class="settings-row">
     <label>wall {{wallPercent}}%</label>
-    <p-slider [(ngModel)]="wallPercent" [style]="{'width': '100%'}" [min]="0" [max]="100" [step]="1"></p-slider>
+    <p-spinner size="30" [(ngModel)]="wallPercent" [inputStyle]="{'width': '100%'}"></p-spinner>
   </div>
 
 
@@ -59,7 +59,7 @@
 
     <span>Generation:  {{iGeneration}}</span>
     <span>Step:  {{iStep}} / {{settings.stepCount}}</span>
-    <span>Live Bots:  {{world.liveBotCount}} / {{settings.botCount}}</span>
+    <span>Live Bots:  {{world.liveBotsCount}} / {{settings.botCount}}</span>
 
 
     <!--<button (click)="fastModeClick()">Fast</button>-->
@@ -68,24 +68,30 @@
     <!--<input type="checkbox" [(ngModel)]="showMap">-->
     <!--<input type="number" [(ngModel)]="showMapStep" style="width: 50px">-->
 
-    <svg style="height: 200px; border: 1px solid gray;">
+    <svg style="height: 200px; border: 1px solid gray;" *ngIf="stepCountHistory.length">
 
       <rect *ngFor="let h of stepCountHistory; let index=index;"
             fill="#fc0"
             [attr.x]="index *5"
             [attr.y]="200-h*2"
-            [attr.width]="5"
+            [attr.width]="4"
             [attr.height]="h*2"/>
       <text x="0" y="10">
         Live steps by last generations
       </text>
+
+      <text x="0" y="30">
+        Mid: {{stepCountHistoryMid}}
+      </text>
     </svg>
+
+    <pre style="white-space: pre-wrap;">{{info}}</pre>
   </div>
 </div>
 <div *ngIf="world && speed<=settings.stepCount" style="display: flex; flex-direction: column; flex: 1;">
   <div *ngFor="let row of world.map" class="row">
     <div *ngFor="let cell of row" class="cell" [ngClass]="cell.cls">
-      <div style="position: absolute;">{{cell.text()}}</div>
+      <div style="position: absolute;">{{cell.text}}</div>
     </div>
   </div>
 </div>

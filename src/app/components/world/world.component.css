@@ -47,28 +47,28 @@
   //border: 0.1px solid lightgray;
 }
 
-.emptyCell
+.empty
 {
 
 }
 
-.grassCell
+.eating
 {
   background: greenyellow;
 }
 
-.botCell
+.bot
 {
   background: blue;
   color: white;
 }
 
-.poisonCell
+.poison
 {
   background: red;
 }
 
-.wallCell
+.wall
 {
   background: black;
 }
