@@ -55,7 +55,7 @@ export class WorldComponent implements OnInit {
   ngOnInit() {
 
 
-    if (this.route.snapshot.queryParams) {
+    if (this.route.snapshot.queryParams.settingsShowMap) {
       this.settings.showMap = JSON.parse(this.route.snapshot.queryParams.settingsShowMap);
     }
 
