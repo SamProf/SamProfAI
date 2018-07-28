@@ -66,7 +66,7 @@ export class CanvasComponent implements OnInit {
   }
 
 
-  private resizedDiv(e: any) {
+  resizedDiv(e: any) {
     console.log('resizedDiv', e);
     this.setCanvasSize();
   }
