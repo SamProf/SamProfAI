@@ -7,7 +7,9 @@ import {PageNoFoundComponent} from './components/page-no-found/page-no-found.com
 import {WorldComponent} from './components/world/world.component';
 import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ButtonModule, SliderModule, SpinnerModule} from 'primeng/primeng';
+import {ButtonModule, CheckboxModule, SelectButtonModule, SliderModule, SpinnerModule} from 'primeng/primeng';
+import {AngularResizedEventModule} from 'angular-resize-event';
+import {CanvasComponent} from './components/canvas/canvas.component';
 
 
 const appRoutes: Routes = [
@@ -15,7 +17,7 @@ const appRoutes: Routes = [
   {
     path: '',
     redirectTo: '/world',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {path: '**', component: PageNoFoundComponent}
 ];
@@ -25,13 +27,17 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     WorldComponent,
-    PageNoFoundComponent
+    PageNoFoundComponent,
+    CanvasComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    SelectButtonModule,
+    CheckboxModule,
     RouterModule.forRoot(
+
       appRoutes,
       {
         useHash: true,
@@ -40,6 +46,7 @@ const appRoutes: Routes = [
     SpinnerModule,
     SliderModule,
     ButtonModule,
+    AngularResizedEventModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

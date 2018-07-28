@@ -5,10 +5,10 @@ export class WorldSimSettings implements IWorldSimSettings {
   }
 
   botMemoryLength: number = 64;
-  botCount: number = 64;
+  botCount: number = 500;
 
-  width: number = 64;
-  height: number = 48;
+  width: number = 300;
+  height: number = 300;
 
   eatingPercent: number = 0.05;
   poisonPercent: number = 0.05;
@@ -24,7 +24,8 @@ export class WorldSimSettings implements IWorldSimSettings {
   showMap: boolean = true;
   speed: number = 1;
   simToLast: boolean = true;
-
+  eatingCellMax: number = 100;
+  eatingCellGrow: number = 0.1;
 }
 
 
@@ -51,4 +52,7 @@ export interface IWorldSimSettings {
 
   showMap: boolean;
   speed: number;
+
+  eatingCellMax: number;
+  eatingCellGrow: number;
 }

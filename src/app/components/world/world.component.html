@@ -59,10 +59,12 @@
 
     <!--</div>-->
     <div style="display: flex; flex-direction: row;">
-      <button pButton type="button" label="Slow by Step" style="" (click)="settings.showMap=true"
-              style="flex: 1;"></button>
-      <button pButton type="button" label="Fast by Generation" style="" (click)="settings.showMap=false"
-              style="flex: 1"></button>
+      <p-checkbox [(ngModel)]="settings.showMap" binary="true"></p-checkbox>
+      <span>By Step Mode</span>
+    </div>
+
+    <div style="display: flex; flex-direction: row;" *ngIf="settings.showMap">
+      <p-button label="Search best bot" (onClick)="showBestBot()"></p-button>
     </div>
     <!--<p-slider [(ngModel)]="speed" [style]="{'width': '100%'}" [min]="1" [max]="settings.stepCount + 1"-->
     <!--[step]="1"></p-slider>-->
@@ -89,13 +91,15 @@
     <pre style="white-space: pre-wrap;">{{sim.info}}</pre>
   </div>
 </div>
-<div *ngIf="settings.showMap && sim.world" style="display: flex; flex-direction: column; flex: 1;">
-  <div *ngFor="let row of sim.world.map" class="row">
-    <div *ngFor="let cell of row" class="cell" [ngClass]="cell.cls">
-      <div style="position: absolute;">{{cell.text}}</div>
-    </div>
-  </div>
-</div>
+
+<app-canvas #canvas style="flex: 1" (repaint)="repaint()" [scaleFactor]="0"></app-canvas>
+<!--<div *ngIf="settings.showMap && sim.world" style="display: flex; flex-direction: column; flex: 1;">-->
+<!--<div *ngFor="let row of sim.world.map" class="row">-->
+<!--<div *ngFor="let cell of row" class="cell" [ngClass]="cell.cls">-->
+<!--<div style="position: absolute;">{{cell.text}}</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
 
 
 <!--<div *ngIf="!showMap " style="display: flex; flex-direction: row; flex: 1;">-->

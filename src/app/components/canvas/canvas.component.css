@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  /*overflow: auto;*/
+}
+
+.canvas-div {
+  flex: 1;
+  /*!*display: inline;*!*/
+  /*width: 10000px;*/
+  /*height: 10000px;*/
+
+  /*min-width: 10000px;*/
+  /*min-height: 10000px;*/
+}
+
+
+.canvas {
+  position: absolute;
+}

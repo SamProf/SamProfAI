@@ -21,9 +21,11 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
+    "angular-resize-event": "^0.4.4",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",
+    "pan-zoom": "^3.1.0",
     "primeng": "^5.2.5",
     "rxjs": "^5.5.6",
     "zone.js": "^0.8.19"

@@ -1,22 +1,19 @@
-export function workerAsync(func: () => Promise<void>, flagDisable: boolean = false): Promise<void> {
-  if (flagDisable) {
-    return func();
-  }
-  else {
-    return new Promise<void>((resolve => {
-      setTimeout(() => {
-        func().then(resolve);
-      }, 0);
-    }));
-  }
+import {setZeroTimeout} from './setZeroTimeout';
+
+export function workerAsync(func: () => Promise<void>): Promise<void> {
+  return new Promise<void>((resolve => {
+    setZeroTimeout(() => {
+      func().then(resolve);
+    });
+  }));
 }
 
 
-export function workerStateAsync(func: (WorkerState) => Promise<void>, flagDisable: boolean = false): WorkerState {
+export function workerStateAsync(func: (WorkerState) => Promise<void>): WorkerState {
   var state = new WorkerState();
   state.result = workerAsync(async () => {
     await func(state);
-  }, flagDisable);
+  });
   return state;
 }
 

@@ -11,7 +11,7 @@ export class WorldSym {
   public world: WorldModel;
 
 
-  constructor(public settings: IWorldSimSettings) {
+  constructor(public settings: IWorldSimSettings, private paintFn: () => void) {
   }
 
   public lastStepCounts: number[] = [];
@@ -48,6 +48,9 @@ export class WorldSym {
             this.iGeneration = iGeneration;
             this.world.prepare(generation);
 
+            if (this.settings.showMap) {
+              this.paintFn();
+            }
 
             for (var iStep = 0; (iStep < this.settings.stepCount) && (this.world.liveBotsCount > (this.settings.simToLast ? 0 : this.settings.newGenerationTopPercent * generation.length)); iStep++) {
               if (state.terminated) {
@@ -57,7 +60,10 @@ export class WorldSym {
                 this.iStep = iStep;
                 this.world.step();
 
-              }, !this.settings.showMap || this.iStep % this.settings.speed != 0);
+                if (this.settings.showMap) {
+                  this.paintFn();
+                }
+              });
             }
 
 
@@ -89,37 +95,9 @@ export class WorldSym {
             d1 = d2;
 
 
-            // this.info = '';
-            // this.bestGen = bots[0].genom;
-            //
-            // this.info += `Bots:`;
-            // for (var b = 0; b < Math.min(10, bots.length); b++) {
-            //   var s = bots[b].health.toString();
-            //   while (s.length < 6) s = ' ' + s;
-            //   this.info += ' ' + s;
-            // }
-            //
-            //
-            // this.info += '\nGenom:\n' + bots[0].genom.commands.map(i => {
-            //   var s = i.toString();
-            //   while (s.length < 4) {
-            //     s = '0' + s;
-            //   }
-            //   return s;
-            // }).join(' ');
-            //
-            //
-            //
-            //
-            // var d2 = new Date();
-            // if (d1) {
-            //   this.info += '\nGenTime: ' + (((d2.getTime()) - d1.getTime())).toString();
-            // }
-            // d1 = d2;
-            //
-            // this.info += '\nLiveBots: ' + this.world.liveBotsCount;
+            console.log(this.info);
+            this.paintFn();
 
-            // console.log(this.info);
           });
         }
       });

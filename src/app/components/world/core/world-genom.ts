@@ -1,4 +1,4 @@
-import {Genom} from '../../../core/genom';
+
 import {MathHelper} from '../../../helpers/math-helper';
 
 export class WorldGenom {
