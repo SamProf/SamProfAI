@@ -140,6 +140,13 @@ export class WorldComponent implements OnInit {
 
     this.canvas.moveToCenter((bot.x - 0.5) * cellSize, (bot.y - 0.5) * cellSize);
   }
+
+  displaySidebar: boolean = true;
+
+  test1() {
+    this.displaySidebar = true;
+
+  }
 }
 
 

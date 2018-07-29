@@ -7,7 +7,7 @@ import {PageNoFoundComponent} from './components/page-no-found/page-no-found.com
 import {WorldComponent} from './components/world/world.component';
 import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ButtonModule, CheckboxModule, SelectButtonModule, SliderModule, SpinnerModule} from 'primeng/primeng';
+import {ButtonModule, CheckboxModule, SelectButtonModule, SidebarModule, SliderModule, SpinnerModule} from 'primeng/primeng';
 import {CanvasComponent} from './components/canvas/canvas.component';
 
 
@@ -30,7 +30,7 @@ const appRoutes: Routes = [
     CanvasComponent,
   ],
   imports: [
-
+    SidebarModule,
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
