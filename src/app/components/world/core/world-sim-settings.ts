@@ -1,14 +1,14 @@
-export class WorldSimSettings implements IWorldSimSettings {
+export class WorldSimSettings  {
 
   constructor(config: Partial<WorldSimSettings> = {}) {
-    Object.assign(this, config);
+    Object.apply(this, config);
   }
 
   botMemoryLength: number = 64;
-  botCount: number = 500;
+  botCount: number = 64;
 
-  width: number = 300;
-  height: number = 300;
+  width: number = 64;
+  height: number = 48;
 
   eatingPercent: number = 0.05;
   poisonPercent: number = 0.05;
@@ -29,30 +29,3 @@ export class WorldSimSettings implements IWorldSimSettings {
 }
 
 
-export interface IWorldSimSettings {
-  botMemoryLength: number;
-  botCount: number;
-
-  width: number;
-  height: number;
-
-  eatingPercent: number;
-  poisonPercent: number;
-  wallPercent: number;
-
-  stepCount: number;
-
-  longSee: boolean;
-
-  mutantPercent: number;
-  mutantCellPercent: number;
-  newGenerationTopPercent: number;
-
-  simToLast: boolean;
-
-  showMap: boolean;
-  speed: number;
-
-  eatingCellMax: number;
-  eatingCellGrow: number;
-}

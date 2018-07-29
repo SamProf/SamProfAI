@@ -9,6 +9,15 @@ export function workerAsync(func: () => Promise<void>): Promise<void> {
 }
 
 
+export function threadSleepAsync(ms: number): Promise<void> {
+  return new Promise<void>((resolve => {
+    setInterval(() => {
+      resolve();
+    }, ms);
+  }));
+}
+
+
 export function workerStateAsync(func: (WorkerState) => Promise<void>): WorkerState {
   var state = new WorkerState();
   state.result = workerAsync(async () => {

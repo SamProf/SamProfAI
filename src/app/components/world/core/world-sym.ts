@@ -1,9 +1,9 @@
 import {WorldModel} from './world-model';
-import {workerAsync, WorkerState, workerStateAsync} from '../../../helpers/worker-async';
+import {threadSleepAsync, workerAsync, WorkerState, workerStateAsync} from '../../../helpers/worker-async';
 import {WorldBotState} from './world-bot-state';
 import {MathHelper} from '../../../helpers/math-helper';
 import {WorldGenom} from './world-genom';
-import {IWorldSimSettings, WorldSimSettings} from './world-sim-settings';
+import {WorldSimSettings} from './world-sim-settings';
 
 export class WorldSym {
 
@@ -11,7 +11,7 @@ export class WorldSym {
   public world: WorldModel;
 
 
-  constructor(public settings: IWorldSimSettings, private paintFn: () => void) {
+  constructor(public settings: WorldSimSettings, private paintFn: () => void) {
   }
 
   public lastStepCounts: number[] = [];
@@ -56,14 +56,23 @@ export class WorldSym {
               if (state.terminated) {
                 return;
               }
+              // var stepDate1 = new Date();
               await workerAsync(async () => {
                 this.iStep = iStep;
                 this.world.step();
 
-                if (this.settings.showMap) {
-                  this.paintFn();
-                }
+
               });
+
+              if (this.settings.showMap) {
+                this.paintFn();
+                // var stepTimeMs = 100 - (new Date().getTime() - stepDate1.getTime());
+                // if (stepTimeMs >= 0) {
+                //   await threadSleepAsync(stepTimeMs);
+                // }
+
+
+              }
             }
 
 

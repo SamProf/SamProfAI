@@ -9,10 +9,12 @@ import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ButtonModule, CheckboxModule, SelectButtonModule, SidebarModule, SliderModule, SpinnerModule} from 'primeng/primeng';
 import {CanvasComponent} from './components/canvas/canvas.component';
+import {World2Component} from './components/world2/world2.component';
 
 
 const appRoutes: Routes = [
   {path: 'world', component: WorldComponent},
+  {path: 'world2', component: World2Component},
   {
     path: '',
     redirectTo: '/world',
@@ -26,6 +28,7 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     WorldComponent,
+    World2Component,
     PageNoFoundComponent,
     CanvasComponent,
   ],
