@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod --aot --base-href /SamProfAI/",
+    "build": "ng build --prod --base-href /SamProfAI/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -21,12 +21,12 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
-    "angular-resize-event": "^0.4.4",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",
     "pan-zoom": "^3.1.0",
     "primeng": "^5.2.5",
+    "resize-sensor": "0.0.6",
     "rxjs": "^5.5.6",
     "zone.js": "^0.8.19"
   },

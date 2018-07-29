@@ -8,7 +8,6 @@ import {WorldComponent} from './components/world/world.component';
 import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ButtonModule, CheckboxModule, SelectButtonModule, SliderModule, SpinnerModule} from 'primeng/primeng';
-import {AngularResizedEventModule} from 'angular-resize-event';
 import {CanvasComponent} from './components/canvas/canvas.component';
 
 
@@ -31,13 +30,13 @@ const appRoutes: Routes = [
     CanvasComponent,
   ],
   imports: [
+
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
     SelectButtonModule,
     CheckboxModule,
     RouterModule.forRoot(
-
       appRoutes,
       {
         useHash: true,
@@ -46,7 +45,7 @@ const appRoutes: Routes = [
     SpinnerModule,
     SliderModule,
     ButtonModule,
-    AngularResizedEventModule,
+
   ],
   providers: [],
   bootstrap: [AppComponent]

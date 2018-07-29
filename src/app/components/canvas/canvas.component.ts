@@ -1,5 +1,6 @@
-import {Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import * as panZoom from 'pan-zoom/index.js';
+import * as ResizeSensor from 'resize-sensor/ResizeSensor.js';
 
 
 export const scalePowFactor = 1.2;
@@ -14,6 +15,9 @@ export class CanvasComponent implements OnInit {
 
   @ViewChild('canvas')
   canvas: ElementRef;
+
+  @ViewChild('canvasDiv')
+  canvasDiv: ElementRef;
 
 
   @Output()
@@ -31,6 +35,11 @@ export class CanvasComponent implements OnInit {
   private _dy: number = 0;
 
   ngOnInit() {
+
+    new ResizeSensor(this.canvasDiv.nativeElement, () => {
+      this.setCanvasSize();
+    });
+
     panZoom(this.el.nativeElement, (e: PanZoomEvent) => {
       console.log(e);
       if (e.dz) {

@@ -1,11 +1,5 @@
 import {ApplicationRef, ChangeDetectorRef, Component, NgZone, OnInit, ViewChild} from '@angular/core';
-import {WorldModel} from './core/world-model';
-import {WorldGenom} from './core/world-genom';
-import {MathHelper} from '../../helpers/math-helper';
-import {b} from '@angular/core/src/render3';
 import {ActivatedRoute} from '@angular/router';
-import {workerAsync, WorkerState, workerStateAsync} from '../../helpers/worker-async';
-import {WorldBotState} from './core/world-bot-state';
 import {WorldSimSettings} from './core/world-sim-settings';
 import {WorldSym} from './core/world-sym';
 import {CanvasComponent} from '../canvas/canvas.component';
@@ -72,48 +66,50 @@ export class WorldComponent implements OnInit {
 
 
       var word = this.sim.world;
+      if (word != null) {
 
-      var rectInfo = this.canvas.getClientRectInfo();
+        var rectInfo = this.canvas.getClientRectInfo();
 
-      var x1 = Math.max(0, Math.floor(rectInfo.x / cellSize));
-      var x2 = Math.min(Math.ceil((rectInfo.x + rectInfo.width) / cellSize), word.map[0].length);
+        var x1 = Math.max(0, Math.floor(rectInfo.x / cellSize));
+        var x2 = Math.min(Math.ceil((rectInfo.x + rectInfo.width) / cellSize), word.map[0].length);
 
-      var y1 = Math.max(0, Math.floor(rectInfo.y / cellSize));
-      var y2 = Math.min(Math.ceil((rectInfo.y + rectInfo.height) / cellSize), word.map.length);
+        var y1 = Math.max(0, Math.floor(rectInfo.y / cellSize));
+        var y2 = Math.min(Math.ceil((rectInfo.y + rectInfo.height) / cellSize), word.map.length);
 
 
-      for (var y = y1; y < y2; y++) {
-        var col = word.map[y];
-        for (var x = x1; x < x2; x++) {
-          var cell = col[x];
-          switch (cell.type) {
-            case WorldCellType.empty:
+        for (var y = y1; y < y2; y++) {
+          var col = word.map[y];
+          for (var x = x1; x < x2; x++) {
+            var cell = col[x];
+            switch (cell.type) {
+              case WorldCellType.empty:
+                ctx.fillStyle = 'white';
+                break;
+              case WorldCellType.eating:
+                ctx.fillStyle = 'green';
+                break;
+              case WorldCellType.bot:
+                ctx.fillStyle = 'blue';
+                break;
+              case WorldCellType.wall:
+                ctx.fillStyle = 'black';
+                break;
+              case WorldCellType.poison:
+                ctx.fillStyle = 'red';
+                break;
+            }
+
+            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+
+
+            if (cell.type == WorldCellType.bot) {
               ctx.fillStyle = 'white';
-              break;
-            case WorldCellType.eating:
-              ctx.fillStyle = 'green';
-              break;
-            case WorldCellType.bot:
-              ctx.fillStyle = 'blue';
-              break;
-            case WorldCellType.wall:
-              ctx.fillStyle = 'black';
-              break;
-            case WorldCellType.poison:
-              ctx.fillStyle = 'red';
-              break;
+              ctx.textBaseline = 'top';
+              ctx.fillText(cell.bot.health.toString(), x * cellSize, y * cellSize);
+            }
+
+
           }
-
-          ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-
-
-          if (cell.type == WorldCellType.bot) {
-            ctx.fillStyle = 'white';
-            ctx.textBaseline = 'top';
-            ctx.fillText(cell.bot.health.toString(), x * cellSize, y * cellSize);
-          }
-
-
         }
       }
     }
