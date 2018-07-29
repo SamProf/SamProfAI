@@ -33,4 +33,17 @@ export class WorldGenom {
     return c;
   }
 
+
+  compare(g2: WorldGenom): number {
+    var len = Math.min(this.commands.length, g2.commands.length);
+    var dif = Math.max(this.commands.length, g2.commands.length) - len;
+    for (var i = 0; i < len; i++) {
+      if (this.commands[i] != g2.commands[i]) {
+        dif++;
+      }
+    }
+    return dif / len;
+  }
+
+
 }

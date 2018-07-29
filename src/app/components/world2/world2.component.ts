@@ -1,6 +1,6 @@
 import {ApplicationRef, ChangeDetectorRef, Component, NgZone, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {WorldSimSettings} from './core/world-sim-settings';
+import {MapMode, WorldSimSettings} from './core/world-sim-settings';
 import {WorldSym} from './core/world-sym';
 import {CanvasComponent} from '../canvas/canvas.component';
 import {WorldCellType} from './core/world-cell-type';
@@ -11,7 +11,7 @@ var cellSize = 20;
 @Component({
   selector: 'app-world2',
   templateUrl: './world2.component.html',
-  styleUrls: ['./world2.component.css']
+  styleUrls: ['./world2.component.css'],
 })
 export class World2Component implements OnInit {
 
@@ -21,6 +21,8 @@ export class World2Component implements OnInit {
       this.repaint();
     });
   }
+
+  mapModeEnum = MapMode;
 
   public settings: WorldSimSettings;
   public sim: WorldSym;
@@ -79,32 +81,70 @@ export class World2Component implements OnInit {
 
         for (var y = y1; y < y2; y++) {
           var col = word.map[y];
-          var colEnergy = word.energy[y];
           for (var x = x1; x < x2; x++) {
             var cell = col[x];
-            switch (cell.type) {
-              case WorldCellType.empty:
-                ctx.fillStyle = `rgb(${255 - 255 * colEnergy[x] / this.settings.energyCellMax},255,${255 - 255 * colEnergy[x] / this.settings.energyCellMax})`;
-                break;
-              case WorldCellType.bot:
-                var r = cell.bot.energyKill * 255 / (cell.bot.energyKill + cell.bot.energyEat);
-                var b = cell.bot.energyEat * 255 / (cell.bot.energyKill + cell.bot.energyEat);
-                ctx.fillStyle = `rgb(${r}, 0, ${b})`;
-                break;
-              case WorldCellType.wall:
-                ctx.fillStyle = 'black';
-                break;
+
+
+            if (this.settings.mapMode == MapMode.default) {
+
+              switch (cell.type) {
+                case WorldCellType.empty:
+                  ctx.fillStyle = `white`;
+                  break;
+                case WorldCellType.bot:
+                  if (cell.bot.isDead) {
+                    ctx.fillStyle = `gray`;
+                  }
+                  else {
+                    var r = cell.bot.energyKill * 255 / (cell.bot.energyKill + cell.bot.energyEat);
+                    var g = cell.bot.energyEat * 255 / (cell.bot.energyKill + cell.bot.energyEat);
+                    ctx.fillStyle = `rgb(${r}, ${g}, 0)`;
+                  }
+
+                  break;
+                case WorldCellType.wall:
+                  ctx.fillStyle = 'black';
+                  break;
+              }
+
+              ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+
+
+              if (cell.type == WorldCellType.bot && !cell.bot.isDead) {
+                ctx.fillStyle = 'white';
+                ctx.textBaseline = 'top';
+                ctx.fillText(Math.round(cell.bot.health).toString(), x * cellSize, y * cellSize);
+              }
             }
+            else if (this.settings.mapMode == MapMode.energy) {
+              switch (cell.type) {
+                case WorldCellType.empty:
+                  ctx.fillStyle = `white`;
+                  break;
+                case WorldCellType.bot:
+                  if (cell.bot.isDead) {
+                    ctx.fillStyle = `white`;
+                  }
+                  else {
+                    var r = cell.bot.health * 255 / (this.settings.botMaxEnergy);
+                    ctx.fillStyle = `rgb(255, ${255-r}, ${255-r})`;
+                  }
 
-            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                  break;
+                case WorldCellType.wall:
+                  ctx.fillStyle = 'white';
+                  break;
+              }
+
+              ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 
 
-            if (cell.type == WorldCellType.bot) {
-              ctx.fillStyle = 'white';
-              ctx.textBaseline = 'top';
-              ctx.fillText(cell.bot.health.toString(), x * cellSize, y * cellSize);
+              if (cell.type == WorldCellType.bot && !cell.bot.isDead) {
+                ctx.fillStyle = 'white';
+                ctx.textBaseline = 'top';
+                ctx.fillText(Math.round(cell.bot.health).toString(), x * cellSize, y * cellSize);
+              }
             }
-
 
           }
         }

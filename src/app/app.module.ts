@@ -10,6 +10,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ButtonModule, CheckboxModule, SelectButtonModule, SidebarModule, SliderModule, SpinnerModule} from 'primeng/primeng';
 import {CanvasComponent} from './components/canvas/canvas.component';
 import {World2Component} from './components/world2/world2.component';
+import { KeysPipe } from './pipes/keys.pipe';
 
 
 const appRoutes: Routes = [
@@ -31,6 +32,7 @@ const appRoutes: Routes = [
     World2Component,
     PageNoFoundComponent,
     CanvasComponent,
+    KeysPipe,
   ],
   imports: [
     SidebarModule,

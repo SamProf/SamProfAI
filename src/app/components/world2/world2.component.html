@@ -3,50 +3,51 @@
 
 <p-sidebar [(visible)]="displaySidebar" appendTo="body">
 
-  <div style="display: flex; flex-direction: column; width: 300px; align-items: flex-start; overflow-y: auto" class="menu">
+  <div style="display: flex; flex-direction: column; width: 300px; align-items: flex-start; overflow-y: auto"
+       class="menu">
     <h3>SamProf AI 2.0</h3>
 
     <!--<div class="settings-row">-->
-      <!--<label>stepCount</label>-->
-      <!--<p-spinner size="30" [(ngModel)]="settings.stepCount" [inputStyle]="{'width': '100%'}"></p-spinner>-->
+    <!--<label>stepCount</label>-->
+    <!--<p-spinner size="30" [(ngModel)]="settings.stepCount" [inputStyle]="{'width': '100%'}"></p-spinner>-->
     <!--</div>-->
 
     <!--<div class="settings-row">-->
-      <!--<label>botCount</label>-->
-      <!--<p-spinner size="30" [(ngModel)]="settings.botCount" [inputStyle]="{'width': '100%'}"></p-spinner>-->
+    <!--<label>botCount</label>-->
+    <!--<p-spinner size="30" [(ngModel)]="settings.botCount" [inputStyle]="{'width': '100%'}"></p-spinner>-->
     <!--</div>-->
     <!--<div class="settings-row">-->
-      <!--<label>botMemoryLength</label>-->
-      <!--<p-spinner size="30" [(ngModel)]="settings.botMemoryLength" [inputStyle]="{'width': '100%'}"></p-spinner>-->
+    <!--<label>botMemoryLength</label>-->
+    <!--<p-spinner size="30" [(ngModel)]="settings.botMemoryLength" [inputStyle]="{'width': '100%'}"></p-spinner>-->
     <!--</div>-->
 
 
     <!--<div class="settings-row">-->
-      <!--<label>map width/height</label>-->
-      <!--<p-spinner size="30" [(ngModel)]="settings.width" [inputStyle]="{'width': '100%'}"></p-spinner>-->
-      <!--<p-spinner size="30" [(ngModel)]="settings.height" [inputStyle]="{'width': '100%'}"></p-spinner>-->
-    <!--</div>-->
-
-    <!--<div class="settings-row">-->
-      <!--<label>eating {{eatingPercent}}%</label>-->
-      <!--<p-spinner size="30" [(ngModel)]="eatingPercent" [inputStyle]="{'width': '100%'}"></p-spinner>-->
-
+    <!--<label>map width/height</label>-->
+    <!--<p-spinner size="30" [(ngModel)]="settings.width" [inputStyle]="{'width': '100%'}"></p-spinner>-->
+    <!--<p-spinner size="30" [(ngModel)]="settings.height" [inputStyle]="{'width': '100%'}"></p-spinner>-->
     <!--</div>-->
 
     <!--<div class="settings-row">-->
-      <!--<label>poison {{poisonPercent}}%</label>-->
-      <!--<p-spinner size="30" [(ngModel)]="poisonPercent" [inputStyle]="{'width': '100%'}"></p-spinner>-->
+    <!--<label>eating {{eatingPercent}}%</label>-->
+    <!--<p-spinner size="30" [(ngModel)]="eatingPercent" [inputStyle]="{'width': '100%'}"></p-spinner>-->
 
     <!--</div>-->
 
     <!--<div class="settings-row">-->
-      <!--<label>wall {{wallPercent}}%</label>-->
-      <!--<p-spinner size="30" [(ngModel)]="wallPercent" [inputStyle]="{'width': '100%'}"></p-spinner>-->
+    <!--<label>poison {{poisonPercent}}%</label>-->
+    <!--<p-spinner size="30" [(ngModel)]="poisonPercent" [inputStyle]="{'width': '100%'}"></p-spinner>-->
+
     <!--</div>-->
 
     <!--<div class="settings-row">-->
-      <!--<label>simToLast</label>-->
-      <!--<input type="checkbox" [(ngModel)]="settings.simToLast">-->
+    <!--<label>wall {{wallPercent}}%</label>-->
+    <!--<p-spinner size="30" [(ngModel)]="wallPercent" [inputStyle]="{'width': '100%'}"></p-spinner>-->
+    <!--</div>-->
+
+    <!--<div class="settings-row">-->
+    <!--<label>simToLast</label>-->
+    <!--<input type="checkbox" [(ngModel)]="settings.simToLast">-->
     <!--</div>-->
 
 
@@ -54,29 +55,36 @@
     <!--<button (click)="sim.stopSim()">Stop</button>-->
 
     <!--<div *ngIf="sim.world" style="display: flex; flex-direction: column;">-->
-      <!--<h3>Status</h3>-->
-      <!--&lt;!&ndash;<div class="settings-row">&ndash;&gt;-->
-      <!--&lt;!&ndash;<label>&ndash;&gt;-->
-      <!--&lt;!&ndash;<span>Speed</span>&ndash;&gt;-->
+    <!--<h3>Status</h3>-->
+    <!--&lt;!&ndash;<div class="settings-row">&ndash;&gt;-->
+    <!--&lt;!&ndash;<label>&ndash;&gt;-->
+    <!--&lt;!&ndash;<span>Speed</span>&ndash;&gt;-->
 
-      <!--&lt;!&ndash;</label>&ndash;&gt;-->
-      <!--&lt;!&ndash;<p-spinner size="30" [(ngModel)]="speed" [inputStyle]="{'width': '100%'}"></p-spinner>&ndash;&gt;-->
+    <!--&lt;!&ndash;</label>&ndash;&gt;-->
+    <!--&lt;!&ndash;<p-spinner size="30" [(ngModel)]="speed" [inputStyle]="{'width': '100%'}"></p-spinner>&ndash;&gt;-->
 
 
-      <!--&lt;!&ndash;</div>&ndash;&gt;-->
-      <!--<div style="display: flex; flex-direction: row;">-->
-        <!--<p-checkbox [(ngModel)]="settings.showMap" binary="true"></p-checkbox>-->
-        <!--<span>By Step Mode</span>-->
-      <!--</div>-->
+    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+    <div style="display: flex; flex-direction: row;">
+      <p-checkbox [(ngModel)]="settings.showMap" binary="true"></p-checkbox>
+      <span>By Step Mode</span>
+    </div>
 
-      <!--<div style="display: flex; flex-direction: row;" *ngIf="settings.showMap">-->
-        <!--<p-button label="Search best bot" (onClick)="showBestBot()"></p-button>-->
+    <div style="display: flex; flex-direction: row;">
+      <select [(ngModel)]="settings.mapMode">
+        <option *ngFor="let item of mapModeEnum | keys" [value]="item.key">{{item.value}}</option>
+      </select>
+      {{settings.mapMode}}
+    </div>
+
+    <div style="display: flex; flex-direction: row;" *ngIf="settings.showMap">
+      <!--<p-button label="Search best bot" (onClick)="showBestBot()"></p-button>-->
       <!--</div>-->
       <!--&lt;!&ndash;<p-slider [(ngModel)]="speed" [style]="{'width': '100%'}" [min]="1" [max]="settings.stepCount + 1"&ndash;&gt;-->
       <!--&lt;!&ndash;[step]="1"></p-slider>&ndash;&gt;-->
 
       <!--<span>Generation:  {{sim.iGeneration}}</span>-->
-      <!--<span>Step:  {{sim.iStep}} / {{settings.stepCount}}</span>-->
+      <span>Step:  {{sim.iStep}}</span>
       <!--<span>Live Bots:  {{sim.world.liveBotsCount}} / {{settings.botCount}}</span>-->
 
       <!--&lt;!&ndash;<input type="checkbox" [(ngModel)]="showMap">&ndash;&gt;-->
@@ -84,18 +92,18 @@
 
       <!--<svg style="height: 200px; border: 1px solid gray;" *ngIf="sim.lastStepCounts.length">-->
 
-        <!--<rect *ngFor="let h of sim.lastStepCounts; let index=index;"-->
-              <!--fill="black"-->
-              <!--[attr.x]="''+(index *100  / sim.lastStepCounts.length)+'%'"-->
-              <!--[attr.y]="0"-->
-              <!--[attr.width]="4"-->
-              <!--[attr.height]="''+(h * 100/ settings.stepCount)+'%'"/>-->
-        <!--&lt;!&ndash;<text x="0" y="30">&ndash;&gt;-->
-        <!--&lt;!&ndash;Mid: {{stepCountHistoryMid}}&ndash;&gt;-->
-        <!--&lt;!&ndash;</text>&ndash;&gt;-->
+      <!--<rect *ngFor="let h of sim.lastStepCounts; let index=index;"-->
+      <!--fill="black"-->
+      <!--[attr.x]="''+(index *100  / sim.lastStepCounts.length)+'%'"-->
+      <!--[attr.y]="0"-->
+      <!--[attr.width]="4"-->
+      <!--[attr.height]="''+(h * 100/ settings.stepCount)+'%'"/>-->
+      <!--&lt;!&ndash;<text x="0" y="30">&ndash;&gt;-->
+      <!--&lt;!&ndash;Mid: {{stepCountHistoryMid}}&ndash;&gt;-->
+      <!--&lt;!&ndash;</text>&ndash;&gt;-->
       <!--</svg>-->
       <!--<pre style="white-space: pre-wrap;">{{sim.info}}</pre>-->
-    <!--</div>-->
+    </div>
   </div>
 </p-sidebar>
 

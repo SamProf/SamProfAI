@@ -12,9 +12,7 @@ export class WorldBotState {
   y: number;
   commandIndex: number = 0;
 
-  get isDead(): boolean {
-    return this.health <= 0;
-  }
+  isDead: boolean = false;
 
   getCommand(): number {
     return this.genom.commands[this.commandIndex];

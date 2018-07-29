@@ -9,7 +9,6 @@ import {WorldSimSettings} from './world-sim-settings';
 
 export class WorldModel {
   map: WorldCellModel[][] = [];
-  energy: number[][] = [];
   bots: WorldBotState[] = [];
   commands: WorldCommand[] = [];
 
@@ -29,100 +28,121 @@ export class WorldModel {
   constructor(public settings: WorldSimSettings) {
 
 
-    this.addCommand(8, (bot, cmd) => {
-      // catch
+    this.addCommand(16, (bot, cmd) => {
+      // photosintez
+      // var mult = bot.energyEat + bot.energyKill == 0 ? 1 : (bot.energyEat) / (bot.energyEat + bot.energyKill);
+      var mult = 1;
+      var canEat = Math.min(settings.botMaxEnergy - bot.health, 4 * mult * (this.settings.height - bot.y) / this.settings.height);
+      bot.health += canEat;
+      bot.energyEat += canEat;
+      bot.addCommandAddr(1);
+      return 1;
+    });
+
+    this.addCommand(8 * 8, (bot, cmd) => {
+      // Kill
+      let xy = this.getXYByAngle(bot, (cmd % 8) * 45);
+      if (xy == null) {
+        bot.addCommandAddr(1);
+        return 0.2;
+      }
       let x, y;
-      [x, y] = this.getXYByAngle(bot, cmd * 45);
+      [x, y] = xy;
       var cell = this.map[y][x];
       switch (cell.type) {
         case WorldCellType.wall:
+          bot.addCommandAddr(2);
+          return 0.2;
         case WorldCellType.empty:
-          bot.addCommandAddr(1);
+          bot.addCommandAddr(3);
           return 0.2;
         case WorldCellType.bot: {
-          var canEat = Math.min(settings.botMaxEnergy - bot.health, cell.bot.health);
-          bot.health += canEat;
-          bot.energyKill += canEat;
-          cell.bot.health = 0;
-          if (cell.bot.isDead) {
-            cell.type = WorldCellType.empty;
-            cell.bot = null;
-          }
+          var possibleEat = cell.bot.isDead || (bot.genom.compare(cell.bot.genom) >= this.settings.mutantCellPercent);
+          if (possibleEat) {
+            cell.bot.isDead = true;
+            var canEat = Math.min(settings.botMaxEnergy - bot.health, cell.bot.health);
+            bot.health += canEat;
+            bot.energyKill += canEat;
 
-          bot.addCommandAddr(2);
-          return 1.0;
+            this.map[bot.y][bot.x].type = WorldCellType.empty;
+            this.map[bot.y][bot.x].bot = null;
+            bot.x = x;
+            bot.y = y;
+            cell.type = WorldCellType.bot;
+            cell.bot = bot;
+
+            bot.addCommandAddr(4);
+            return 1.0;
+          }
+          else {
+            bot.addCommandAddr(5);
+            return 0.5;
+          }
         }
         default:
-          return 1;
-
-        // case WorldCellType.empty: {
-        //   var canEat = Math.min(settings.botMaxEnergy - bot.health, this.energy[y][x]);
-        //   bot.health += canEat;
-        //   bot.energyEat += canEat;
-        //   this.energy[y][x] -= canEat;
-        //   bot.addCommandAddr(3);
-        //   break;
-        // }
+          throw Error();
       }
     });
 
 
     this.addCommand(8, (bot, cmd) => {
-      var canEat = Math.min(settings.botMaxEnergy - bot.health, this.energy[bot.y][bot.x]);
-      bot.health += canEat;
-      bot.energyEat += canEat;
-      this.energy[bot.y][bot.x] -= canEat;
-      bot.addCommandAddr(1);
-      return 0.4;
-    });
-
-    this.addCommand(8, (bot, cmd) => {
       // step
-      let x, y;
-      [x, y] = this.getXYByAngle(bot, cmd * 45);
+      let x, y, xy;
+      xy = this.getXYByAngle(bot, cmd * 45);
+      if (xy == null) {
+        bot.addCommandAddr(1);
+        return 0.3;
+      }
+      [x, y] = xy;
       var cell = this.map[y][x];
 
       switch (cell.type) {
         case WorldCellType.wall: {
-          bot.addCommandAddr(1);
+          bot.addCommandAddr(2);
           return 0.3;
         }
         case WorldCellType.bot: {
-          bot.addCommandAddr(2);
+          bot.addCommandAddr(3);
           return 0.3;
         }
         case WorldCellType.empty: {
           this.map[bot.y][bot.x].type = WorldCellType.empty;
+          this.map[bot.y][bot.x].bot = null;
           bot.x = x;
           bot.y = y;
           cell.type = WorldCellType.bot;
           cell.bot = bot;
-          bot.addCommandAddr(3);
+          bot.addCommandAddr(4);
           return 1;
 
         }
         default:
-          return 1;
+          throw new Error();
       }
 
     });
 
     this.addCommand(8, (bot, cmd) => {
       // see
-      let x, y;
-      [x, y] = this.getXYByAngle(bot, cmd * 45);
+      let x, y, xy;
+      xy = this.getXYByAngle(bot, cmd * 45);
+      if (xy == null) {
+        bot.addCommandAddr(1);
+        return 0.1;
+      }
+      [x, y] = xy;
       var cell = this.map[y][x];
       switch (cell.type) {
         case WorldCellType.wall: {
-          bot.addCommandAddr(1);
-          break;
-        }
-        case WorldCellType.bot: {
           bot.addCommandAddr(2);
           break;
         }
-        case WorldCellType.empty: {
+        case WorldCellType.bot: {
           bot.addCommandAddr(3);
+          break;
+        }
+        case WorldCellType.empty: {
+          bot.addCommandAddr(4);
           break;
         }
       }
@@ -152,14 +172,12 @@ export class WorldModel {
     this.clear();
     this.createWall();
     this.createBots(gens);
-    this.createEnergy();
   }
 
   step() {
 
     var liveBots: WorldBotState[] = [];
     this.stepIndex++;
-    this.createEnergy();
 
 
     for (var iBot = 0; iBot < this.bots.length; iBot++) {
@@ -175,11 +193,11 @@ export class WorldModel {
         var cmd = this.commands[command];
         currentStepEnergy += cmd.func(bot, command - cmd.firstIndex);
       }
-      // bot.health -= bot.age / 100;
+      // bot.health -= Math.ceil(bot.age / 500);
       bot.health -= 1;
-      if (bot.isDead) {
-        this.map[bot.y][bot.x].type = WorldCellType.empty;
-        this.map[bot.y][bot.x].bot = null;
+      if (bot.health <= 0 ) {
+        bot.isDead = true;
+        bot.health = 20;
       }
       else {
         bot.age++;
@@ -188,7 +206,7 @@ export class WorldModel {
 
         liveBots.push(bot);
 
-        if (bot.age > 50 && bot.health > this.settings.botMaxEnergy * 0.8) {
+        if (bot.age > 50 && bot.health > this.settings.botMaxEnergy * 0.9) {
           var freeXY = this.getFreePlace(bot);
           if (freeXY != null) {
             // debugger;
@@ -197,8 +215,8 @@ export class WorldModel {
             bot2.x = freeXY[0];
             bot2.y = freeXY[1];
             bot2.angle = bot.angle;
-            bot.health /= 2;
             bot2.health = bot.health;
+            bot.health /= 2;
             this.map[bot2.y][bot2.x].type = WorldCellType.bot;
             this.map[bot2.y][bot2.x].bot = bot2;
             liveBots.push(bot2);
@@ -231,11 +249,13 @@ export class WorldModel {
   }
 
   getFreePlace(bot: WorldBotState): number[] {
-    var x, y;
+
     for (var angle = 0; angle < 360; angle += 45) {
-      [x, y] = this.getXYByAngle(bot, angle);
-      if (this.map[y][x].type == WorldCellType.empty) {
-        return [x, y];
+      var xy = this.getXYByAngle(bot, angle + 180);
+      if (xy != null) {
+        if (this.map[xy[1]][xy[0]].type == WorldCellType.empty) {
+          return xy;
+        }
       }
     }
     return null;
@@ -243,14 +263,14 @@ export class WorldModel {
 
 
   getXYByDxDy(bot: WorldBotState, dx: number, dy: number): number[] {
-    var x = (bot.x + dx) % this.settings.width;
-    if (x < 0) {
-      x = x + this.settings.width;
-    }
+    var x = bot.x + dx;
+    var y = bot.y + dy;
 
-    var y = (bot.y + dy) % this.settings.height;
-    if (y < 0) {
-      y = y + this.settings.height;
+    if (x >= this.settings.width || x < 0) {
+      return null;
+    }
+    if (y >= this.settings.height || y < 0) {
+      return null;
     }
     return [x, y];
   }
@@ -288,21 +308,6 @@ export class WorldModel {
     return [-1, -1, false];
   }
 
-
-  createEnergy(): void {
-
-    for (var y = 0; y < this.energy.length; y++) {
-      var rowEnergy = this.energy[y];
-      var row = this.map[y];
-      for (var x = 0; x < row.length; x++) {
-        if (row[x].type == WorldCellType.empty) {
-          rowEnergy[x] = Math.min(rowEnergy[x] + this.settings.energyCellGrow, this.settings.energyCellMax);
-        }
-      }
-    }
-  }
-
-
   createWall(): void {
     var currentWall = 0;
     while (currentWall / (this.settings.height * this.settings.width) < this.settings.wallPercent) {
@@ -320,17 +325,14 @@ export class WorldModel {
 
 
   clear() {
-    this.energy = [];
+
     this.map = [];
     for (var y = 0; y < this.settings.height; y++) {
       var row: WorldCellModel[] = [];
-      var rowEnergy: number[] = [];
       for (var x = 0; x < this.settings.width; x++) {
         row.push(new WorldCellModel());
-        rowEnergy.push(this.settings.energyCellInit);
       }
       this.map.push(row);
-      this.energy.push(rowEnergy);
     }
   }
 }
