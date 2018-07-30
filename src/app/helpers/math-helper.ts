@@ -11,3 +11,13 @@ export class MathHelper {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 }
+
+
+export function distanceLength(x1: number, y1: number, x2: number, y2: number) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
+
+
+export function distanceLengthPow2(x1: number, y1: number, x2: number, y2: number): number {
+  return (x2 - x1) * (x2 - x1) +(y2 - y1) * (y2 - y1);
+}

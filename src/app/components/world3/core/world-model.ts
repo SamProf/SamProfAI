@@ -5,6 +5,7 @@ import {WorldCellType} from './world-cell-type';
 import {WorldBotState} from './world-bot-state';
 import {WorldCommand} from './world-command';
 import {WorldSimSettings} from './world-sim-settings';
+import {Perlin2D} from '../genesis/perlin2-d';
 
 
 export class WorldModel {
@@ -29,12 +30,12 @@ export class WorldModel {
 
 
     this.addCommand(16, (bot, cmd) => {
-      var mult = bot.energyEat + bot.energyKill == 0 ? 1 : (bot.energyEat) / (bot.energyEat + bot.energyKill);
+      // photosintez
+      // var mult = bot.energyEat + bot.energyKill == 0 ? 1 : (bot.energyEat) / (bot.energyEat + bot.energyKill);
       var mult = 1;
       var canEat = Math.min(settings.botMaxEnergy - bot.health, 4 * mult * (this.settings.height - bot.y) / this.settings.height);
       bot.health += canEat;
       bot.energyEat += canEat;
-
       bot.addCommandAddr(1);
       return 1;
     });
@@ -170,7 +171,6 @@ export class WorldModel {
   prepare(gens: WorldGenom[]) {
     this.stepIndex = 0;
     this.clear();
-    this.createWall();
     this.createBots(gens);
   }
 
@@ -195,7 +195,7 @@ export class WorldModel {
       }
       // bot.health -= Math.ceil(bot.age / 500);
       bot.health -= 1;
-      if (bot.health <= 0 ) {
+      if (bot.health <= 0) {
         bot.isDead = true;
         bot.health = 20;
       }
@@ -308,29 +308,22 @@ export class WorldModel {
     return [-1, -1, false];
   }
 
-  createWall(): void {
-    var currentWall = 0;
-    while (currentWall / (this.settings.height * this.settings.width) < this.settings.wallPercent) {
-      var x, y, flag;
-      [x, y, flag] = this.getEmptyCell();
-      if (flag) {
-        this.map[y][x].type = WorldCellType.wall;
-        currentWall++;
-      }
-      else {
-        break;
-      }
-    }
-  }
-
 
   clear() {
+
+    var perlin = new Perlin2D();
 
     this.map = [];
     for (var y = 0; y < this.settings.height; y++) {
       var row: WorldCellModel[] = [];
       for (var x = 0; x < this.settings.width; x++) {
-        row.push(new WorldCellModel());
+        var cell = new WorldCellModel();
+
+        var f = 160;
+        var value = perlin.getNoise4(x / f, y / f, 8, 0.45);        // вычисляем точку ландшафта
+        cell.height = Math.floor(value * 255 + 128) & 255;
+
+        row.push(cell);
       }
       this.map.push(row);
     }

@@ -10,12 +10,16 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ButtonModule, CheckboxModule, SelectButtonModule, SidebarModule, SliderModule, SpinnerModule} from 'primeng/primeng';
 import {CanvasComponent} from './components/canvas/canvas.component';
 import {World2Component} from './components/world2/world2.component';
-import { KeysPipe } from './pipes/keys.pipe';
+import {KeysPipe} from './pipes/keys.pipe';
+import {World3Component} from './components/world3/world3.component';
+import {World4Component} from './components/world4/world4.component';
 
 
 const appRoutes: Routes = [
   {path: 'world', component: WorldComponent},
   {path: 'world2', component: World2Component},
+  {path: 'world3', component: World3Component},
+  {path: 'world4', component: World4Component,},
   {
     path: '',
     redirectTo: '/world',
@@ -30,6 +34,8 @@ const appRoutes: Routes = [
     AppComponent,
     WorldComponent,
     World2Component,
+    World3Component,
+    World4Component,
     PageNoFoundComponent,
     CanvasComponent,
     KeysPipe,

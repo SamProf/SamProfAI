@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { World2Component } from './world2.component';
 
-describe('World2Component', () => {
+describe('World3Component', () => {
   let component: World2Component;
   let fixture: ComponentFixture<World2Component>;
 
