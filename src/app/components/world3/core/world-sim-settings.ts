@@ -12,6 +12,7 @@ export class WorldSimSettings {
 
   width: number = 1000;
   height: number = 1000;
+  seaLevel: number = 140;
 
 
   wallPercent: number = 0.0;

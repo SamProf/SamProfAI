@@ -3,7 +3,7 @@
 
 <p-sidebar [(visible)]="displaySidebar" appendTo="body">
 
-  <div style="display: flex; flex-direction: column; width: 300px; align-items: flex-start; overflow-y: auto"
+  <div style="display: flex; flex-direction: column; width: 300px; align-items: stretch; overflow-y: auto"
        class="menu">
     <h3>SamProf AI 2.0</h3>
 
@@ -73,6 +73,10 @@
       <span>By Step Mode</span>
     </div>
 
+    <div style="">
+      <p-slider [(ngModel)]="settings.seaLevel" [min]="0" [max]="255"></p-slider>
+    </div>
+
     <div style="display: flex; flex-direction: row;">
       <select [(ngModel)]="settings.mapMode">
         <option *ngFor="let item of mapModeEnum | keys" [value]="item.key">{{item.value}}</option>
@@ -80,7 +84,7 @@
       {{settings.mapMode}}
     </div>
 
-    <div style="display: flex; flex-direction: row;" >
+    <div style="display: flex; flex-direction: row;">
       <!--<p-button label="Search best bot" (onClick)="showBestBot()"></p-button>-->
       <!--</div>-->
       <!--&lt;!&ndash;<p-slider [(ngModel)]="speed" [style]="{'width': '100%'}" [min]="1" [max]="settings.stepCount + 1"&ndash;&gt;-->
@@ -112,7 +116,7 @@
 </p-sidebar>
 
 
-<app-canvas #canvas style="flex: 1" (repaint)="repaint()" [scaleFactor]="10"></app-canvas>
+<app-canvas2 #canvas style="flex: 1" (repaint)="repaint()" [scaleFactor]="0"></app-canvas2>
 <!--<div *ngIf="settings.showMap && sim.world" style="display: flex; flex-direction: column; flex: 1;">-->
 <!--<div *ngFor="let row of sim.world.map" class="row">-->
 <!--<div *ngFor="let cell of row" class="cell" [ngClass]="cell.cls">-->

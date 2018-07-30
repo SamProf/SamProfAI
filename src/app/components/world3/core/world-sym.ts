@@ -41,6 +41,10 @@ export class WorldSym {
     this.iStep = 0;
     this.currentSym.start(() => {
       this.iStep++;
+      var row = this.world.map[MathHelper.getRandomInt(0, this.world.map.length - 1)];
+      var cell = row[MathHelper.getRandomInt(0, row.length - 1)];
+      // cell.height = MathHelper.getRandomInt(0, 200);
+
       // this.world.step();
 
       if (this.settings.showMap) {

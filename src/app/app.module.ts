@@ -13,6 +13,7 @@ import {World2Component} from './components/world2/world2.component';
 import {KeysPipe} from './pipes/keys.pipe';
 import {World3Component} from './components/world3/world3.component';
 import {World4Component} from './components/world4/world4.component';
+import {Canvas2Component} from './components/canvas2/canvas2.component';
 
 
 const appRoutes: Routes = [
@@ -38,6 +39,7 @@ const appRoutes: Routes = [
     World4Component,
     PageNoFoundComponent,
     CanvasComponent,
+    Canvas2Component,
     KeysPipe,
   ],
   imports: [

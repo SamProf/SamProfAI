@@ -223,7 +223,7 @@ export class WorldModel {
           this.bots.push(bot2);
         }
         else {
-          bot.health = 0;
+          // bot.health = 0;
         }
       }
 

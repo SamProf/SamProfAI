@@ -193,7 +193,7 @@ export class WorldModel {
         var cmd = this.commands[command];
         currentStepEnergy += cmd.func(bot, command - cmd.firstIndex);
       }
-      // bot.health -= Math.ceil(bot.age / 500);
+      bot.health -= Math.ceil(bot.age / 500);
       bot.health -= 1;
       if (bot.health <= 0 ) {
         bot.isDead = true;
