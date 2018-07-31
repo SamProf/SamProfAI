@@ -5,7 +5,7 @@ import {WorldCellType} from './world-cell-type';
 import {WorldBotState} from './world-bot-state';
 import {WorldCommand} from './world-command';
 import {WorldSimSettings} from './world-sim-settings';
-import {Perlin2D} from '../genesis/perlin2-d';
+import {Perlin2D} from '../../../helpers/perlin2-d';
 
 
 export class WorldModel {

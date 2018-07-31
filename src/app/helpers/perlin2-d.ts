@@ -1,4 +1,4 @@
-import {MathHelper} from '../../../helpers/math-helper';
+import {MathHelper} from './math-helper';
 
 export class Perlin2D {
 

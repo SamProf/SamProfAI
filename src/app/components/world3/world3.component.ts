@@ -34,7 +34,6 @@ export class World3Component implements OnInit {
     });
   }
 
-  mapModeEnum = MapMode;
 
   public settings: WorldSimSettings;
   public sim: WorldSym;

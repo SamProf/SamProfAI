@@ -7,7 +7,16 @@ import {PageNoFoundComponent} from './components/page-no-found/page-no-found.com
 import {WorldComponent} from './components/world/world.component';
 import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ButtonModule, CheckboxModule, SelectButtonModule, SidebarModule, SliderModule, SpinnerModule} from 'primeng/primeng';
+import {
+  ButtonModule,
+  CheckboxModule, DropdownModule,
+  ListboxModule,
+  MenubarModule,
+  SelectButtonModule,
+  SidebarModule,
+  SliderModule,
+  SpinnerModule, TooltipModule
+} from 'primeng/primeng';
 import {CanvasComponent} from './components/canvas/canvas.component';
 import {World2Component} from './components/world2/world2.component';
 import {KeysPipe} from './pipes/keys.pipe';
@@ -17,16 +26,16 @@ import {Canvas2Component} from './components/canvas2/canvas2.component';
 
 
 const appRoutes: Routes = [
-  {path: 'world', component: WorldComponent},
-  {path: 'world2', component: World2Component},
-  {path: 'world3', component: World3Component},
-  {path: 'world4', component: World4Component,},
+  {path: 'bots', component: WorldComponent},
+  {path: 'genesis', component: World2Component},
+  // {path: 'world3', component: World3Component},
+  // {path: 'world4', component: World4Component,},
   {
     path: '',
-    redirectTo: '/world',
+    redirectTo: '/genesis',
     pathMatch: 'full',
   },
-  {path: '**', component: PageNoFoundComponent}
+  {path: '**', redirectTo: '/',}
 ];
 
 
@@ -58,6 +67,10 @@ const appRoutes: Routes = [
     SpinnerModule,
     SliderModule,
     ButtonModule,
+    MenubarModule,
+    ListboxModule,
+    TooltipModule,
+    DropdownModule,
 
   ],
   providers: [],

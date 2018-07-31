@@ -1,9 +1,10 @@
-import {ApplicationRef, ChangeDetectorRef, Component, NgZone, OnInit, ViewChild} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {WorldSimSettings} from './core/world-sim-settings';
 import {WorldSym} from './core/world-sym';
 import {CanvasComponent} from '../canvas/canvas.component';
 import {WorldCellType} from './core/world-cell-type';
+import {Canvas2Component} from '../canvas2/canvas2.component';
 
 
 var cellSize = 20;
@@ -13,7 +14,7 @@ var cellSize = 20;
   templateUrl: './world.component.html',
   styleUrls: ['./world.component.css']
 })
-export class WorldComponent implements OnInit {
+export class WorldComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute, private app: ApplicationRef, private chd: ChangeDetectorRef, private zone: NgZone) {
     this.settings = new WorldSimSettings();
@@ -52,7 +53,7 @@ export class WorldComponent implements OnInit {
 
 
   @ViewChild('canvas')
-  canvas: CanvasComponent;
+  canvas: Canvas2Component;
 
   repaint() {
 
@@ -127,7 +128,10 @@ export class WorldComponent implements OnInit {
   }
 
   startSim() {
-    this.sim.startSim();
+    this.zone.runOutsideAngular(() => {
+      this.sim.startSim();
+    });
+
   }
 
   showBestBot() {
@@ -146,6 +150,10 @@ export class WorldComponent implements OnInit {
   test1() {
     this.displaySidebar = true;
 
+  }
+
+  ngOnDestroy(): void {
+    this.sim.stopSim();
   }
 }
 

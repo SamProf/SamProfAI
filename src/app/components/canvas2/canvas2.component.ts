@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, NgZone, OnInit, Output, ViewChild} from '@angular/core';
 import * as panZoom from 'pan-zoom/index.js';
 import * as ResizeSensor from 'resize-sensor/ResizeSensor.js';
 
@@ -28,7 +28,7 @@ export class Canvas2Component implements OnInit {
   public repaint: EventEmitter<void> = new EventEmitter<void>();
 
 
-  constructor(private el: ElementRef) {
+  constructor(private el: ElementRef, private zone: NgZone) {
   }
 
 
@@ -40,9 +40,12 @@ export class Canvas2Component implements OnInit {
 
   ngOnInit() {
 
-    new ResizeSensor(this.canvasDiv.nativeElement, () => {
-      this.setCanvasSize();
+    this.zone.runOutsideAngular(() => {
+      new ResizeSensor(this.canvasDiv.nativeElement, () => {
+        this.setCanvasSize();
+      });
     });
+
 
     panZoom(this.el.nativeElement, (e: PanZoomEvent) => {
       console.log(e);
@@ -64,6 +67,20 @@ export class Canvas2Component implements OnInit {
 
       this.repaint.emit();
     });
+  }
+
+
+  createImageData(width: number, height): ImageData {
+    this.canvas2.nativeElement.width = width;
+    this.canvas2.nativeElement.height = height;
+    var ctx2 = this.canvas2.nativeElement.getContext('2d');
+    return ctx2.createImageData(width, height);
+  }
+
+  drawImageData(ctx: CanvasRenderingContext2D, imageData: ImageData) {
+    var ctx2 = this.canvas2.nativeElement.getContext('2d');
+    ctx2.putImageData(imageData, 0, 0);
+    ctx.drawImage(this.canvas2.nativeElement, 0, 0);
   }
 
 
