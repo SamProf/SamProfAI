@@ -1,4 +1,4 @@
-export class WorldSimSettings  {
+export class WorldSimSettings {
 
   constructor(config: Partial<WorldSimSettings> = {}) {
     Object.apply(this, config);
@@ -22,6 +22,7 @@ export class WorldSimSettings  {
   mutantCellPercent: number = 0.1;
   newGenerationTopPercent: number = 0.2;
   showMap: boolean = true;
+  notSoFast: boolean = false;
   speed: number = 1;
   simToLast: boolean = true;
   eatingCellMax: number = 100;

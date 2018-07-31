@@ -60,9 +60,7 @@ export class WorldSym {
               await workerAsync(async () => {
                 this.iStep = iStep;
                 this.world.step();
-
-
-              });
+              }, this.settings.notSoFast ? 100 : 0);
 
               if (this.settings.showMap) {
                 this.paintFn();

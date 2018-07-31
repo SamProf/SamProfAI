@@ -1,10 +1,17 @@
 import {setZeroTimeout} from './setZeroTimeout';
 
-export function workerAsync(func: () => Promise<void>): Promise<void> {
+export function workerAsync(func: () => Promise<void>, timeout: number = 0): Promise<void> {
   return new Promise<void>((resolve => {
-    setZeroTimeout(() => {
-      func().then(resolve);
-    });
+    if (timeout == 0) {
+      setZeroTimeout(() => {
+        func().then(resolve);
+      });
+    }
+    else {
+      setTimeout(() => {
+        func().then(resolve);
+      }, timeout);
+    }
   }));
 }
 

@@ -70,6 +70,11 @@
       <span>By Step Mode</span>
     </div>
 
+    <div style="display: flex; flex-direction: row;">
+      <p-checkbox [(ngModel)]="settings.notSoFast" binary="true"></p-checkbox>
+      <span>Not so fast</span>
+    </div>
+
     <div style="display: flex; flex-direction: row;" *ngIf="settings.showMap">
       <p-button label="Search best bot" (onClick)="showBestBot()"></p-button>
     </div>
