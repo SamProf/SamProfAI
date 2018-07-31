@@ -17,7 +17,7 @@ export class WorldSimSettings {
   mutantPercent: number = 20;
   mutantCellPercent: number = 3;
 
-  enableDeadBots: boolean = false;
+  enableDeadBots: boolean = true;
 
   botGenomType: boolean = true;
 
