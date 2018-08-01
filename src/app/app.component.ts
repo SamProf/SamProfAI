@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {MenuItem} from 'primeng/api';
 
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -12,6 +13,9 @@ export class AppComponent {
 
 
   // items: MenuItem[];
+
+
+  counterUrl: string;
 
 
   ngOnInit() {
@@ -33,6 +37,12 @@ export class AppComponent {
 
 
   constructor() {
+    var escape = window['escape'];
+    this.counterUrl = '//counter.yadro.ru/hit?t38.6;r' + escape(document.referrer) + ((typeof(screen) == 'undefined') ? '' :
+      ';s' + screen.width + '*' + screen.height + '*' + (screen.colorDepth ?
+      screen.colorDepth : screen.pixelDepth)) + ';u' + escape(document.URL) +
+      ';h' + escape(document.title.substring(0, 150)) + ';' + Math.random() +
+      ';';
     // var myWorker = new Worker('webworker.bundle.js');
     //
     // myWorker.onmessage = function (e) {
