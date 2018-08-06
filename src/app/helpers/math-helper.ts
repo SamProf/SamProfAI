@@ -19,5 +19,33 @@ export function distanceLength(x1: number, y1: number, x2: number, y2: number) {
 
 
 export function distanceLengthPow2(x1: number, y1: number, x2: number, y2: number): number {
-  return (x2 - x1) * (x2 - x1) +(y2 - y1) * (y2 - y1);
+  return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+}
+
+
+export function getRandomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+
+export function indexOfMax(arr) {
+  if (arr.length === 0) {
+    return -1;
+  }
+
+  var max = arr[0];
+  var maxIndex = 0;
+
+  for (var i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      maxIndex = i;
+      max = arr[i];
+    }
+  }
+
+  return maxIndex;
+}
+
+export function argMax(arr) {
+  return indexOfMax(arr);
 }

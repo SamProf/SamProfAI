@@ -18,7 +18,7 @@ export class WorldSimSettings {
   mutantCellPercent: number = 3;
 
   enableDeadBots: boolean = true;
-
+  oldBotsNeedsMoreEnergy: boolean = false;
   botGenomType: boolean = true;
 
   commandPhotosynthesis: boolean = true;
@@ -45,6 +45,9 @@ export class WorldSimSettings {
   mapMode: MapMode = MapMode.pixels;
 
   mapCreationType: MapCreationType = MapCreationType.Gradient;
+
+
+  seaLevelPercent: number = 10;
 }
 
 
@@ -58,6 +61,7 @@ export function defaultScale(mapMode: MapMode) {
     case MapMode.pixels:
     case MapMode.pixelsEnergy:
     case MapMode.pixelsMap:
+    case MapMode.pixelsAge:
       return 13;
     case MapMode.none:
     default:
@@ -81,4 +85,5 @@ export enum MapMode {
   pixels,
   pixelsEnergy,
   pixelsMap,
+  pixelsAge,
 }

@@ -99,9 +99,7 @@ export class WorldComponent implements OnInit, OnDestroy {
                 ctx.fillStyle = 'red';
                 break;
             }
-
             ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-
 
             if (cell.type == WorldCellType.bot) {
               ctx.fillStyle = 'white';

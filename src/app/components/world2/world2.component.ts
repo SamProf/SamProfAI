@@ -250,7 +250,7 @@ export class World2Component implements OnInit, OnDestroy {
                     data[off + 0] = ~~r;
                     data[off + 1] = ~~g;
                     data[off + 2] = ~~b;
-                    data[off + 3] = 255;
+                    data[off + 3] = ~~(cell.bot.health * 255 / 100);
 
                   }
 
@@ -333,7 +333,7 @@ export class World2Component implements OnInit, OnDestroy {
 
               var sealLevel = 0.4;
 
-              if (cell.height > sealLevel) {
+              if (cell.height > this.settings.seaLevelPercent / 100) {
 
                 var r = ~~(cell.height * 255);
                 data[off + 0] = 255;
@@ -352,6 +352,57 @@ export class World2Component implements OnInit, OnDestroy {
 
             }
           }
+
+          this.canvas.drawImageData(ctx, imageData);
+        }
+        else if (this.settings.mapMode == MapMode.pixelsAge) {
+
+
+          var imageData = this.canvas.createImageData(this.settings.width, this.settings.height);
+          var data = imageData.data;
+
+
+          let y1 = 0;
+          let y2 = this.settings.height;
+
+          let x1 = 0;
+          let x2 = this.settings.width;
+
+
+          var maxAge = 0;
+
+          for (var y = y1; y < y2; y++) {
+            var row = word.map[y];
+            for (var x = x1; x < x2; x++) {
+              var cell = row[x];
+              if (cell.type == WorldCellType.bot && !cell.bot.isDead) {
+                maxAge = Math.max(maxAge, cell.bot.age);
+              }
+            }
+          }
+
+
+          for (var y = y1; y < y2; y++) {
+            var row = word.map[y];
+            for (var x = x1; x < x2; x++) {
+              var cell = row[x];
+
+              var off = (y * this.settings.width + x) * 4;
+
+              if (cell.type == WorldCellType.bot && !cell.bot.isDead) {
+                var r = cell.bot.age * 255 / maxAge;
+                data[off + 0] = 255;
+                data[off + 1] = 255 - r;
+                data[off + 2] = 255 - r;
+                data[off + 3] = 255;
+              }
+
+            }
+          }
+
+
+
+
 
           this.canvas.drawImageData(ctx, imageData);
         }
@@ -400,6 +451,10 @@ export class World2Component implements OnInit, OnDestroy {
       {
         label: 'Pixels Map (fast)',
         value: MapMode.pixelsMap
+      },
+      {
+        label: 'Pixels Age (fast)',
+        value: MapMode.pixelsAge
       },
     ];
 

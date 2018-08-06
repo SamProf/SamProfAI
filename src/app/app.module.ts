@@ -23,11 +23,13 @@ import {KeysPipe} from './pipes/keys.pipe';
 import {World3Component} from './components/world3/world3.component';
 import {World4Component} from './components/world4/world4.component';
 import {Canvas2Component} from './components/canvas2/canvas2.component';
+import {TetrisComponent} from './components/tetris/tetris.component';
 
 
 const appRoutes: Routes = [
   {path: 'bots', component: WorldComponent},
   {path: 'genesis', component: World2Component},
+  {path: 'tetris', component: TetrisComponent},
   // {path: 'world3', component: World3Component},
   // {path: 'world4', component: World4Component,},
   {
@@ -50,6 +52,7 @@ const appRoutes: Routes = [
     CanvasComponent,
     Canvas2Component,
     KeysPipe,
+    TetrisComponent,
   ],
   imports: [
     SidebarModule,

@@ -100,6 +100,11 @@
   <div>Map mode:</div>
   <p-listbox [options]="mapModes" [(ngModel)]="sim.settings.mapMode" class="app-p-flex"></p-listbox>
 
+
+  <div>Sea level: {{settings.seaLevelPercent}}</div>
+  <p-slider [(ngModel)]="settings.seaLevelPercent" [min]="0" [max]="100"></p-slider>
+
+
   <div style="display: flex; flex-direction: column; align-items: stretch" *ngIf="!sim.currentSym.isBusy">
     <h6>Simulation settings</h6>
 
@@ -142,6 +147,12 @@
       <div style="flex: 1;">
         <p-checkbox [(ngModel)]="settings.botGenomType" binary="true"></p-checkbox>
         Different genom types
+      </div>
+    </div>
+    <div class="settings-row">
+      <div style="flex: 1;">
+        <p-checkbox [(ngModel)]="settings.oldBotsNeedsMoreEnergy" binary="true"></p-checkbox>
+        Old bots needs more energy
       </div>
     </div>
     <div class="settings-row">

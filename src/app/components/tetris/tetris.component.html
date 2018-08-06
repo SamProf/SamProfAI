@@ -1,0 +1,52 @@
+<!--<p-button label="Menu" style="position: absolute; top: 0px; left: 0px; z-index: 2;"-->
+<!--(onClick)="displaySidebar = true"></p-button>-->
+
+
+<div style="display: flex; flex-direction: column; width: 300px; align-items: stretch; overflow-y: auto"
+     class="menu">
+  <h3>Tetris</h3>
+
+
+  <div style="display: flex; flex-direction: row;">
+    <button (click)="startSim()" style="flex: 1">Start</button>
+    <button (click)="stopSim()" style="flex: 1">Stop</button>
+
+  </div>
+
+
+  <div style="display: flex; flex-direction: row;">
+    <span>Generation:  {{sim.generationIndex}}</span>
+  </div>
+
+  <div style="display: flex; flex-direction: row;">
+    <span>Step:  {{sim.stepIndex}}</span>
+  </div>
+
+  <div style="display: flex; flex-direction: row;">
+    <p-checkbox [(ngModel)]="sim.settings.showMap" binary="true"></p-checkbox>
+    <span>By Step Mode</span>
+  </div>
+
+  <h6>Options</h6>
+
+  <div style="display: flex; flex-direction: column; align-items: stretch" *ngIf="!sim.task.isBusy">
+
+  </div>
+
+
+</div>
+
+
+<app-canvas2 #canvas style="flex: 1" (repaint)="repaint()" [scaleFactor]="2"></app-canvas2>
+<!--<div *ngIf="settings.showMap && sim.world" style="display: flex; flex-direction: column; flex: 1;">-->
+<!--<div *ngFor="let row of sim.world.map" class="row">-->
+<!--<div *ngFor="let cell of row" class="cell" [ngClass]="cell.cls">-->
+<!--<div style="position: absolute;">{{cell.text}}</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+
+
+<!--<div *ngIf="!showMap " style="display: flex; flex-direction: row; flex: 1;">-->
+<!--<div *ngFor="let h of stepCountHistory" [style.height]="''+h.toString()+'%'" style="background: red; flex: 1;"></div>-->
+<!--</div>-->

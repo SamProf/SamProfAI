@@ -36,7 +36,8 @@ export class WorldModel {
     if (settings.commandPhotosynthesis) {
       this.addCommand(this.settings.commandPhotosynthesisMult, (bot, cmd) => {
         if (!settings.botGenomType || bot.genom.type == 0) {
-          var canEat = Math.min(settings.botMaxEnergy - bot.health, settings.commandPhotosynthesisEnergy * this.map[bot.y][bot.x].height);
+          let h1 = this.map[bot.y][bot.x].height;
+          var canEat = Math.min(settings.botMaxEnergy - bot.health, h1 <= 1 - (settings.seaLevelPercent / 100) ? (settings.commandPhotosynthesisEnergy * h1) : 0);
           bot.health += canEat;
           bot.colorG += canEat;
           bot.addCommandAddr(1);
@@ -268,8 +269,14 @@ export class WorldModel {
         var cmd = this.commands[command];
         currentStepEnergy += cmd.func(bot, command - cmd.firstIndex);
       }
-      // bot.health -= Math.ceil(bot.age / 100);
-      bot.health -= 1;
+      if (this.settings.oldBotsNeedsMoreEnergy) {
+        bot.health -= Math.ceil(bot.age / 100);
+      }
+      else {
+        bot.health -= 1;
+      }
+
+
       if (bot.health <= 0) {
         bot.isDead = true;
         bot.health = 20;

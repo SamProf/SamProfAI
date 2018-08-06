@@ -28,7 +28,7 @@ export class WorldGenom {
     }
 
     if (world.settings.botGenomType) {
-      if (MathHelper.getRandomInt(0, 5) == 0) {
+      if (MathHelper.getRandomInt(0, 100) <= world.settings.mutantCellPercent) {
         this.type = (this.type + 1) % botGenomTypeCount;
       }
     }
