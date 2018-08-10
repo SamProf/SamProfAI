@@ -9,7 +9,7 @@ import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {
   ButtonModule,
-  CheckboxModule, DropdownModule,
+  CheckboxModule, DropdownModule, InputTextareaModule,
   ListboxModule,
   MenubarModule,
   SelectButtonModule,
@@ -24,12 +24,14 @@ import {World3Component} from './components/world3/world3.component';
 import {World4Component} from './components/world4/world4.component';
 import {Canvas2Component} from './components/canvas2/canvas2.component';
 import {TetrisComponent} from './components/tetris/tetris.component';
+import { TfTestComponent } from './components/tf-test/tf-test.component';
 
 
 const appRoutes: Routes = [
   {path: 'bots', component: WorldComponent},
   {path: 'genesis', component: World2Component},
   {path: 'tetris', component: TetrisComponent},
+  {path: 'tftest', component: TfTestComponent},
   // {path: 'world3', component: World3Component},
   // {path: 'world4', component: World4Component,},
   {
@@ -53,6 +55,7 @@ const appRoutes: Routes = [
     Canvas2Component,
     KeysPipe,
     TetrisComponent,
+    TfTestComponent,
   ],
   imports: [
     SidebarModule,
@@ -74,6 +77,7 @@ const appRoutes: Routes = [
     ListboxModule,
     TooltipModule,
     DropdownModule,
+    InputTextareaModule,
 
   ],
   providers: [],

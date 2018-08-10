@@ -86,6 +86,9 @@ export class Canvas2Component implements OnInit {
 
   public getContext(): CanvasRenderingContext2D {
     var ctx = this.canvas.nativeElement.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.webkitImageSmoothingEnabled = false;
+    ctx.mozImageSmoothingEnabled = false;
     ctx.restore();
     ctx.save();
     ctx.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);

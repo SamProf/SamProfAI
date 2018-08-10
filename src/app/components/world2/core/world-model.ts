@@ -356,8 +356,17 @@ export class WorldModel {
     var x = bot.x + dx;
     var y = bot.y + dy;
 
-    if (x >= this.settings.width || x < 0) {
-      return null;
+    if (this.settings.horizontalLoop) {
+      if (x < 0) {
+        x = this.settings.width + x;
+      }
+      if (x >= this.settings.width) {
+        x = -this.settings.width + x;
+      }
+    } else {
+      if (x >= this.settings.width || x < 0) {
+        return null;
+      }
     }
     if (y >= this.settings.height || y < 0) {
       return null;

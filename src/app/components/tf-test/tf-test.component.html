@@ -1,0 +1,14 @@
+<div style="flex: 1; display: flex; flex-direction: row; align-items: stretch;">
+  <div style="display: flex; flex-direction: column; align-items: stretch; flex: 1;">
+    <input type="file" #fileEl/>
+    <div style="display: flex; flex-direction: row; align-items: baseline;">
+      <button (click)="parseCodesClick()">Load Codes.csv</button>
+      <button (click)="trainClick()">Train</button>
+    </div>
+    <!--<div style="flex: 1; overflow: auto; ">-->
+      <!--<code style="">{{input}}</code>-->
+    <!--</div>-->
+    <!--<textarea pInputTextarea class="flex1" [(ngModel)]="input"></textarea>-->
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: stretch; flex: 1;"></div>
+</div>

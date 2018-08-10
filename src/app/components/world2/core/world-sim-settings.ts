@@ -11,6 +11,7 @@ export class WorldSimSettings {
   width: number = 100;
   height: number = 100;
 
+  horizontalLoop: boolean = true;
 
   wallPercent: number = 0;
 

@@ -1,4 +1,4 @@
-import {ApplicationRef, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, NgZone, OnChanges, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {WorldSimSettings} from './core/world-sim-settings';
 import {WorldSym} from './core/world-sym';
@@ -14,7 +14,7 @@ var cellSize = 20;
   templateUrl: './world.component.html',
   styleUrls: ['./world.component.css']
 })
-export class WorldComponent implements OnInit, OnDestroy {
+export class WorldComponent implements OnInit, OnDestroy{
 
   constructor(private route: ActivatedRoute, private app: ApplicationRef, private chd: ChangeDetectorRef, private zone: NgZone) {
     this.settings = new WorldSimSettings();

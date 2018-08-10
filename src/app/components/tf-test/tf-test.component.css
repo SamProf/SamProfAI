@@ -1,0 +1,5 @@
+:host {
+  flex: 1;
+  align-items: stretch;
+  display: flex;
+}
