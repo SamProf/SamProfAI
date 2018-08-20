@@ -40,6 +40,9 @@ export class WorldSimSettings {
   commandRotate: boolean = true;
   commandRotateMult: number = 1;
 
+  commandIsRelative : boolean = false;
+  commandIsRelativeMult : number = 10;
+
   commandMemoryJump: boolean = true;
 
 

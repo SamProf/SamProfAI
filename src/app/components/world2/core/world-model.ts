@@ -37,7 +37,14 @@ export class WorldModel {
       this.addCommand(this.settings.commandPhotosynthesisMult, (bot, cmd) => {
         if (!settings.botGenomType || bot.genom.type == 0) {
           let h1 = this.map[bot.y][bot.x].height;
-          var canEat = Math.min(settings.botMaxEnergy - bot.health, h1 <= 1 - (settings.seaLevelPercent / 100) ? (settings.commandPhotosynthesisEnergy * h1) : 0);
+
+          var p = settings.seaLevelPercent / 100;
+          if (h1 < p) {
+            bot.addCommandAddr(2);
+            return 0.05;
+          }
+
+          var canEat = Math.min(settings.botMaxEnergy - bot.health, settings.commandPhotosynthesisEnergy * (1 - (h1 - 1) / (p - 1)));
           bot.health += canEat;
           bot.colorG += canEat;
           bot.addCommandAddr(1);
@@ -217,6 +224,40 @@ export class WorldModel {
           }
         }
         return 0.1;
+      });
+
+    }
+
+    if (settings.commandIsRelative) {
+
+      this.addCommand(8 * settings.commandIsRelativeMult, (bot, cmd) => {
+        // see
+        let x, y, xy;
+        xy = this.getXYByAngle(bot, cmd % settings.commandIsRelativeMult * 45);
+        if (xy == null) {
+          bot.addCommandAddr(1);
+          return 0.1;
+        }
+        [x, y] = xy;
+        var cell = this.map[y][x];
+        switch (cell.type) {
+          case WorldCellType.bot: {
+            if (bot.genom.compare(this, cell.bot.genom) <= 3*this.settings.mutantCellPercent / 100) {
+              bot.addCommandAddr(2);
+              break;
+
+            }
+            else {
+              bot.addCommandAddr(2);
+              break;
+
+            }
+
+          }
+          default:
+            bot.addCommandAddr(1);
+            return 0.1;
+        }
       });
 
     }
