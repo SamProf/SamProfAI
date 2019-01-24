@@ -24,7 +24,8 @@ import {World3Component} from './components/world3/world3.component';
 import {World4Component} from './components/world4/world4.component';
 import {Canvas2Component} from './components/canvas2/canvas2.component';
 import {TetrisComponent} from './components/tetris/tetris.component';
-import { TfTestComponent } from './components/tf-test/tf-test.component';
+import {TfTestComponent} from './components/tf-test/tf-test.component';
+import {World5Component} from './components/world5/world5.component';
 
 
 const appRoutes: Routes = [
@@ -33,7 +34,7 @@ const appRoutes: Routes = [
   {path: 'tetris', component: TetrisComponent},
   {path: 'tftest', component: TfTestComponent},
   // {path: 'world3', component: World3Component},
-  // {path: 'world4', component: World4Component,},
+  {path: 'world5', component: World5Component},
   {
     path: '',
     redirectTo: '/genesis',
@@ -50,6 +51,7 @@ const appRoutes: Routes = [
     World2Component,
     World3Component,
     World4Component,
+    World5Component,
     PageNoFoundComponent,
     CanvasComponent,
     Canvas2Component,
